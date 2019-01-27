@@ -1,0 +1,35 @@
+{
+  "name": "graphql-typed-client",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": "git@github.com:helios1138/graphql-typed-client.git",
+  "author": "helios1138 <revan.den@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "rm -rf ./dist && tsc && chmod +x ./dist/cli.js",
+    "prepublish": "yarn build"
+  },
+  "bin": {
+    "generate-graphql-client": "./dist/cli.js"
+  },
+  "devDependencies": {
+    "@types/graphql": "^14.0.5",
+    "@types/mkdirp": "^0.5.2",
+    "@types/node": "^10.12.18",
+    "@types/prettier": "^1.15.2",
+    "@types/rimraf": "^2.0.2",
+    "@types/ws": "^6.0.1",
+    "typescript": "^3.2.4"
+  },
+  "dependencies": {
+    "@types/request": "^2.48.1",
+    "graphql": "^14.1.1",
+    "mkdirp": "^0.5.1",
+    "prettier": "^1.16.0",
+    "request": "^2.88.0",
+    "rimraf": "^2.6.3",
+    "rxjs": "^6.3.3",
+    "subscriptions-transport-ws": "^0.9.15",
+    "ws": "^6.1.3"
+  }
+}
