@@ -1,6 +1,6 @@
 {
   "name": "graphql-typed-client",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "index.js",
   "repository": "git@github.com:helios1138/graphql-typed-client.git",
   "author": "helios1138 <revan.den@gmail.com>",
