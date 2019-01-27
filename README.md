@@ -1,0 +1,1 @@
+# graphql-typed-client
