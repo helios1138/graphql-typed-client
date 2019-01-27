@@ -1,6 +1,4 @@
-# graphql-typed-client
-
-[![npm version](https://badge.fury.io/js/graphql-typed-client.svg)](https://badge.fury.io/js/graphql-typed-client)
+# graphql-typed-client [![npm version](https://img.shields.io/npm/v/graphql-typed-client.svg)](https://www.npmjs.com/package/graphql-typed-client)
 
 A tool which automatically generates a set of TypeScript interfaces
 and a small client library **for any GraphQL endpoint**
