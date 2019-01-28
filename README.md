@@ -8,6 +8,33 @@ The client library will take a specially-formatted plain Javascript object and t
 **Writing GraphQL queries in Javascript** allows for the use of code-completion and type-checking in your IDE, as both
 the query and its response are fully type-annotated
 
+![](https://i.gyazo.com/5f0255b59f0f9c7eebdbe6c077e39cb0.gif)
+
+The JS query is then translated to the following GraphQL query and variables
+```graphql
+query ($v1: String!, $v2: SearchType!, $v3: Int) {
+  search(query: $v1, type: $v2, first: $v3) {
+    nodes {
+      ... on Repository {
+        name
+        owner {
+          ... on User {
+            name
+          }
+          ... on Organization {
+            name
+            teamsUrl
+          }
+        }
+      }
+    }
+  }
+}
+```
+```json
+{ "v1": "graphql", "v2": "REPOSITORY", "v3": 5 }
+```
+
 The generated client uses [`request`](https://github.com/request/request) for executing **Queries** and **Mutations**
 and [Apollo](https://www.apollographql.com/)'s
 [`subscriptions-transport-ws`](https://github.com/apollographql/subscriptions-transport-ws) for **Subscriptions**
