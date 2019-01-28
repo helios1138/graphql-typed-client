@@ -1,12 +1,13 @@
 # graphql-typed-client [![npm version](https://img.shields.io/npm/v/graphql-typed-client.svg)](https://www.npmjs.com/package/graphql-typed-client)
 
-A tool which automatically generates a set of TypeScript interfaces
+A tool which **automatically generates** a set of TypeScript interfaces
 and a small client library **for any GraphQL endpoint**
 
 The client library will take a specially-formatted plain Javascript object and turn it into a GraphQL query
 
 **Writing GraphQL queries in Javascript** allows for the use of code-completion and type-checking in your IDE, as both
 the query and its response are fully type-annotated
+(and code-completion works **even if your project itself does not use Typescript**)
 
 ![](https://i.gyazo.com/5f0255b59f0f9c7eebdbe6c077e39cb0.gif)
 
@@ -44,8 +45,9 @@ shared among all subscriptions and closed when you unsubscribe from the last one
 
 Notes on type annotation generation
 - all known Scalar types are converted to their Typescript counterparts
-- all unknown Scalar types are converted to `any`
+- all unknown Scalar types are converted to type aliases for `any`
 - all Enum types are converted to Typescript enums, so you can import and use them in your code
+(even if you're not using Typescript)
 
 ## Install
 
@@ -62,7 +64,7 @@ generate-graphql-client http://my-server/graphql ./my-client
 ```
 The tool learns about the specified GraphQL endpoint by making a GET request with a schema introspection query
 
-If the endpoint only listens of POST requests or if it requires authorization, you can handle this by supplying
+If the endpoint only listens to POST requests or if it requires authorization, you can handle this by supplying
 a file with a function which should return the options for making a [`request`](https://github.com/request/request)
 
 For example, to generate a client for GitHub GraphQL API, you need to create a file like this:
