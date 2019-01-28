@@ -10,7 +10,7 @@ the query and its response are fully type-annotated
 
 ![](https://i.gyazo.com/5f0255b59f0f9c7eebdbe6c077e39cb0.gif)
 
-The JS query is then translated to the following GraphQL query and variables
+The JS query is then converted to the GraphQL query and variables
 ```graphql
 query ($v1: String!, $v2: SearchType!, $v3: Int) {
   search(query: $v1, type: $v2, first: $v3) {
@@ -23,7 +23,6 @@ query ($v1: String!, $v2: SearchType!, $v3: Int) {
           }
           ... on Organization {
             name
-            teamsUrl
           }
         }
       }
