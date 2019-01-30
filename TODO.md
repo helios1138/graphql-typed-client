@@ -8,3 +8,4 @@
   - ability to map custom scalars to specific TS types
   - ability to automatically deserialize custom scalars (e.g. DateTime to moment() instance)
 - switch from `request` to `fetch`?
+- generate ts type guards based on typename
