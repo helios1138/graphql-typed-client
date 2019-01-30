@@ -10,7 +10,7 @@ const [, , endpoint, outputDir, requestOptionsFnPath] = process.argv
 if (!endpoint || !outputDir) {
   console.log(
     `Error: incorrect or missing arguments. Usage example:\n` +
-    `  ${binName} http://graphql-endpoint.com/graphql ./my-client-dir`,
+      `  ${binName} http://graphql-endpoint.com/graphql ./my-client-dir`,
   )
   process.exit(1)
 }
@@ -21,5 +21,4 @@ if (requestOptionsFnPath) {
   requestOptionsFn = require(path.resolve(requestOptionsFnPath))
 }
 
-generateClient(endpoint, outputDir, requestOptionsFn)
-  .catch(console.log)
+generateClient(endpoint, outputDir, requestOptionsFn).catch(console.log)

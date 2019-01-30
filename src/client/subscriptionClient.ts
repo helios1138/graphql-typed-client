@@ -3,7 +3,7 @@ import ws from 'ws'
 import { from, Observable } from 'rxjs'
 import { concatMap, publishReplay, refCount } from 'rxjs/operators'
 
-export const subscriptionClient = ({ uri, options }: { uri: string, options?: ClientOptions }) => {
+export const subscriptionClient = ({ uri, options }: { uri: string; options?: ClientOptions }) => {
   const client = new SubscriptionClient(uri, { lazy: true, reconnect: true, ...options }, ws)
 
   const clientObservable = new Observable<SubscriptionClient>(subscriber => {
@@ -14,6 +14,6 @@ export const subscriptionClient = ({ uri, options }: { uri: string, options?: Cl
     refCount(),
   )
 
-  return (gql: { query: string, variables?: { [name: string]: any } }) =>
+  return (gql: { query: string; variables?: { [name: string]: any } }) =>
     clientObservable.pipe(concatMap(client => from(<Observable<any>>client.request(gql))))
 }

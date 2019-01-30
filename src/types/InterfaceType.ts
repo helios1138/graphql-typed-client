@@ -29,9 +29,7 @@ export class InterfaceType extends Type {
   }
 
   toTSType() {
-    const interfaceFields = this.interfaces
-      .map(i => i.fields.map(f => f.name))
-      .reduce((r, i) => r.concat(i), [])
+    const interfaceFields = this.interfaces.map(i => i.fields.map(f => f.name)).reduce((r, i) => r.concat(i), [])
 
     const newFields = this.fields.filter(f => !~interfaceFields.indexOf(f.name))
 
@@ -47,7 +45,7 @@ export class InterfaceType extends Type {
       const types = []
       const resolvedType = f.type.underlying.type
       const resolvable = !~[Kind.ENUM, Kind.SCALAR].indexOf(resolvedType.kind)
-      const argsPresent = (f.args.length > 0)
+      const argsPresent = f.args.length > 0
       const argsString = f.argsString
       const argsOptional = !argsString.match(/[^?]:/)
 
@@ -70,9 +68,7 @@ export class InterfaceType extends Type {
       return `${f.name}?:${types.join('|')}`
     })
 
-    this.possibleTypes
-      .map(t => `on_${t.name}?:${t.requestName}`)
-      .forEach(s => fieldStrings.push(s))
+    this.possibleTypes.map(t => `on_${t.name}?:${t.requestName}`).forEach(s => fieldStrings.push(s))
 
     fieldStrings.push('__scalar?:boolean|number')
 

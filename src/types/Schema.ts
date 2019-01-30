@@ -26,9 +26,7 @@ export class Schema {
     [Kind.NON_NULL]: NonNullType,
   }
 
-  constructor(
-    protected readonly data: SchemaDef,
-  ) {
+  constructor(protected readonly data: SchemaDef) {
     this.typeMap = data.types.reduce((result, type) => {
       if (type.name) {
         result[type.name] = this.resolveType(type)
