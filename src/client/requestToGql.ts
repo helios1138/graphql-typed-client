@@ -1,3 +1,4 @@
+import { OperationTypeNode } from 'graphql'
 import { getFieldFromPath } from './getFieldFromPath'
 import { LinkedType } from './linkTypeMap'
 
@@ -106,7 +107,7 @@ const parseRequest = (request: Request | undefined, ctx: Context, path: string[]
   }
 }
 
-export const requestToGql = (operation: 'query' | 'mutation' | 'subscription', root: LinkedType, fields: Fields): Gql => {
+export const requestToGql = (operation: OperationTypeNode, root: LinkedType, fields: Fields): Gql => {
   const ctx: Context = { root, varCounter: 0, variables: {}, fragmentCounter: 0, fragments: [] }
   const result = parseRequest(fields, ctx, [])
 
