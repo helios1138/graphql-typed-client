@@ -4,14 +4,14 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strict": true,
-    "declaration": true,
     "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
     "rootDir": "./src",
     "outDir": "./dist",
     "esModuleInterop": true,
+    "sourceMap": true,
     "lib": ["dom", "es2017", "esnext.asynciterable"]
   },
-  "exclude": ["dist"]
+  "exclude": ["node_modules", "**/*.case.ts"]
 }

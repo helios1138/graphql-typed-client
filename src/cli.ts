@@ -1,24 +1,37 @@
 #!/usr/bin/env node
 
-import path from 'path'
-import { generateClient } from './client/generateClient'
+import program from 'commander'
+import Listr from 'listr'
+import { task } from './cliHelpers/task'
+import { validateConfigs } from './cliHelpers/validateConfigs'
 
-const binName = Object.keys(require('../package.json').bin)[0]
+import { Config } from './config'
+import { requireModuleFromPath } from './helpers/files'
 
-const [, , endpoint, outputDir, requestOptionsFnPath] = process.argv
+program
+  .option('-e, --endpoint <http://example.com/graphql>', 'GraphQL endpoint')
+  .option('-p, --post', 'use POST for introspection query')
+  .option('-s, --schema <./mySchema.graphql>', 'path to GraphQL schema definition file')
+  .option('-o, --output <./myClient>', 'output directory')
+  .option('-f, --fetcher <./schemaFetcher.js>', 'path to introspection query fetcher file')
+  .option('-c, --config <./myConfig.js>', 'path to config file')
+  .option('-v, --verbose', 'verbose output')
+  .parse(process.argv)
 
-if (!endpoint || !outputDir) {
-  console.log(
-    `Error: incorrect or missing arguments. Usage example:\n` +
-      `  ${binName} http://graphql-endpoint.com/graphql ./my-client-dir`,
-  )
-  process.exit(1)
-}
+const resolveConfigs = (configs: Config | Config[]) => (Array.isArray(configs) ? configs : [configs])
 
-let requestOptionsFn
+const configs: Config[] = program.config
+  ? resolveConfigs(<Config>requireModuleFromPath([program.config]))
+  : [
+      {
+        endpoint: program.endpoint,
+        post: program.post,
+        schema: program.schema,
+        output: program.output,
+        fetcher: program.fetcher,
+      },
+    ]
 
-if (requestOptionsFnPath) {
-  requestOptionsFn = require(path.resolve(requestOptionsFnPath))
-}
+if (!validateConfigs(configs)) program.help()
 
-generateClient(endpoint, outputDir, requestOptionsFn).catch(console.log)
+new Listr(configs.map(config => task(config)), { renderer: program.verbose ? 'verbose' : 'default' }).run().catch(() => {})
