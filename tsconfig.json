@@ -4,6 +4,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strict": true,
+    "declaration": true,
     "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
