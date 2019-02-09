@@ -17,12 +17,13 @@ const defaultRequestOptionsFn: RequestOptionsFn = (query, endpoint) => ({
   json: true,
 })
 
-const prettify = (code: string): string => prettier.format(code, {
-  parser: 'typescript',
-  semi: false,
-  singleQuote: true,
-  trailingComma: 'all',
-})
+const prettify = (code: string): string =>
+  prettier.format(code, {
+    parser: 'typescript',
+    semi: false,
+    singleQuote: true,
+    trailingComma: 'all',
+  })
 
 export const generateClient = async (
   endpoint: string,
@@ -43,30 +44,20 @@ export const generateClient = async (
 
   const schema = new Schema(response.data.__schema)
 
-  const results = [
-    ...schema
-      .types
-      .map(t => t.toTSType()),
-    ...schema
-      .types
-      .map(t => t.toRequestTSType()),
-  ]
+  const results = [...schema.types.map(t => t.toTSType()), ...schema.types.map(t => t.toRequestTSType())]
 
-  let types = results
-    .filter(i => i)
-    .join('\n\n')
+  let types = results.filter(i => i).join('\n\n')
 
-  const client = clientTemplate
-    .split('require("..")')
-    .join(`require("${packageName}")`)
+  const client = clientTemplate.split('require("..")').join(`require("${packageName}")`)
 
   let clientTypeImports = []
   let clientTyping = clientTypingsTemplate
     .split('\n')
-    .filter(l =>
-      !~l.indexOf('declare type QUERY') &&
-      !~l.indexOf('declare type MUTATION') &&
-      !~l.indexOf('declare type SUBSCRIPTION'),
+    .filter(
+      l =>
+        !~l.indexOf('declare type QUERY') &&
+        !~l.indexOf('declare type MUTATION') &&
+        !~l.indexOf('declare type SUBSCRIPTION'),
     )
     .join('\n')
 
@@ -77,10 +68,7 @@ export const generateClient = async (
       .split('QUERY_REQUEST_T')
       .join(schema.queryType.requestName)
 
-    clientTypeImports.push(
-      schema.queryType.name,
-      schema.queryType.requestName,
-    )
+    clientTypeImports.push(schema.queryType.name, schema.queryType.requestName)
   } else {
     clientTyping = clientTyping
       .split('QUERY_T')
@@ -96,10 +84,7 @@ export const generateClient = async (
       .split('MUTATION_REQUEST_T')
       .join(schema.mutationType.requestName)
 
-    clientTypeImports.push(
-      schema.mutationType.name,
-      schema.mutationType.requestName,
-    )
+    clientTypeImports.push(schema.mutationType.name, schema.mutationType.requestName)
   } else {
     clientTyping = clientTyping
       .split('MUTATION_T')
@@ -115,10 +100,7 @@ export const generateClient = async (
       .split('SUBSCRIPTION_REQUEST_T')
       .join(schema.subscriptionType.requestName)
 
-    clientTypeImports.push(
-      schema.subscriptionType.name,
-      schema.subscriptionType.requestName,
-    )
+    clientTypeImports.push(schema.subscriptionType.name, schema.subscriptionType.requestName)
   } else {
     clientTyping = clientTyping
       .split('SUBSCRIPTION_T')
@@ -128,9 +110,7 @@ export const generateClient = async (
   }
 
   if (clientTypeImports.length > 0) {
-    clientTyping = [`import{${clientTypeImports.join(',')}}from'./types'`]
-      .concat(clientTyping.split('\n'))
-      .join('\n')
+    clientTyping = [`import{${clientTypeImports.join(',')}}from'./types'`].concat(clientTyping.split('\n')).join('\n')
   }
 
   rimraf.sync(path.resolve(outputDir))

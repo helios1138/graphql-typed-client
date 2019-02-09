@@ -15,7 +15,7 @@ export type Request = boolean | number | FieldMap | [ArgMap, FieldMap]
 
 export type VarDefMap = {
   [name: string]: {
-    value: any,
+    value: any
     typing: string
   }
 }
@@ -60,21 +60,19 @@ export const toGqlConverter = (schema: SchemaDef) => {
 
         const argTypes = getArgsFromPath(schemaSpec, rootType, path) || {}
 
-        return `(${(
-          args
-            .map(arg => {
-              varCounter++
-              const varName = `v${varCounter}`
+        return `(${args
+          .map(arg => {
+            varCounter++
+            const varName = `v${varCounter}`
 
-              varDefMap[varName] = {
-                value: request[0][arg],
-                typing: argTypes[arg],
-              }
+            varDefMap[varName] = {
+              value: request[0][arg],
+              typing: argTypes[arg],
+            }
 
-              return `${arg}:$${varName}`
-            })
-            .join(',')
-        )})${toGql(request[1], path)}`
+            return `${arg}:$${varName}`
+          })
+          .join(',')})${toGql(request[1], path)}`
       } else if (typeof request === 'object') {
         if (!request) {
           return ''
@@ -94,21 +92,17 @@ export const toGqlConverter = (schema: SchemaDef) => {
           fragmentCounter++
           fragmentName = `f${fragmentCounter}`
           fragments.push(
-            `fragment ${fragmentName} on ${typeAtPath}{${
-              Object.keys(typeFields)
-                .filter(f => typeFields[f].scalar && f !== '__typename' && !~fields.indexOf(f))
-                .join(',')
-              }}`,
+            `fragment ${fragmentName} on ${typeAtPath}{${Object.keys(typeFields)
+              .filter(f => typeFields[f].scalar && f !== '__typename' && !~fields.indexOf(f))
+              .join(',')}}`,
           )
         }
 
-        return `{${(
-          fields
-            .filter(f => f !== '__scalar')
-            .map(field => `${fragmentKey(field)}${toGql(request[field], path.concat([field]))}`)
-            .concat(fragmentName ? [`...${fragmentName}`] : [])
-            .join(',')
-        )}}`
+        return `{${fields
+          .filter(f => f !== '__scalar')
+          .map(field => `${fragmentKey(field)}${toGql(request[field], path.concat([field]))}`)
+          .concat(fragmentName ? [`...${fragmentName}`] : [])
+          .join(',')}}`
       } else {
         return ''
       }
@@ -116,19 +110,18 @@ export const toGqlConverter = (schema: SchemaDef) => {
 
     const result = toGql(request, [])
 
-    const varsString = Object.keys(varDefMap).length > 0 ?
-      `(${Object.keys(varDefMap).map(v => `$${v}:${varDefMap[v].typing}`)})`
-      : ''
+    const varsString =
+      Object.keys(varDefMap).length > 0 ? `(${Object.keys(varDefMap).map(v => `$${v}:${varDefMap[v].typing}`)})` : ''
 
     return {
-      query: [
-        `${operation}${varsString}${result}`,
-        ...fragments,
-      ].join(','),
-      variables: Object.keys(varDefMap).reduce((r, v) => {
-        r[v] = varDefMap[v].value
-        return r
-      }, <VarMap>{}),
+      query: [`${operation}${varsString}${result}`, ...fragments].join(','),
+      variables: Object.keys(varDefMap).reduce(
+        (r, v) => {
+          r[v] = varDefMap[v].value
+          return r
+        },
+        <VarMap>{},
+      ),
     }
   }
 }

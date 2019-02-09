@@ -4,7 +4,7 @@ export const underlyingType = (t: TypeDef) => {
   let current = t
   let kinds = []
 
-  for (; ;) {
+  for (;;) {
     kinds.push(current.kind)
 
     if (!~[Kind.LIST, Kind.NON_NULL].indexOf(current.kind)) {

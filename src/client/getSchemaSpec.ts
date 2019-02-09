@@ -28,27 +28,33 @@ export interface SchemaSpec {
 
 export const getSchemaSpec = (s: SchemaDef): SchemaSpec => {
   return {
-    types: s.types
-      .reduce((r, t) => {
+    types: s.types.reduce(
+      (r, t) => {
         if (t.name && (t.fields || t.possibleTypes)) {
           if (t.fields) {
-            r[t.name] = t.fields.reduce((r, f) => {
-              const type = underlyingType(f.type).type
+            r[t.name] = t.fields.reduce(
+              (r, f) => {
+                const type = underlyingType(f.type).type
 
-              r[f.name] = {
-                type: <string>type.name,
-                scalar: !!~[Kind.ENUM, Kind.SCALAR].indexOf(type.kind),
-              }
+                r[f.name] = {
+                  type: <string>type.name,
+                  scalar: !!~[Kind.ENUM, Kind.SCALAR].indexOf(type.kind),
+                }
 
-              if (f.args.length > 0) {
-                r[f.name].args = f.args.reduce((r, a) => {
-                  r[a.name] = <string>underlyingType(a.type).typing
-                  return r
-                }, <ArgMap>{})
-              }
+                if (f.args.length > 0) {
+                  r[f.name].args = f.args.reduce(
+                    (r, a) => {
+                      r[a.name] = <string>underlyingType(a.type).typing
+                      return r
+                    },
+                    <ArgMap>{},
+                  )
+                }
 
-              return r
-            }, <FieldSpecMap>{})
+                return r
+              },
+              <FieldSpecMap>{},
+            )
           }
 
           if (t.possibleTypes) {
@@ -69,7 +75,9 @@ export const getSchemaSpec = (s: SchemaDef): SchemaSpec => {
           }
         }
         return r
-      }, <TypeSpec>{}),
+      },
+      <TypeSpec>{},
+    ),
     queryType: s.queryType && s.queryType.name,
     mutationType: s.mutationType && s.mutationType.name,
     subscriptionType: s.subscriptionType && s.subscriptionType.name,
