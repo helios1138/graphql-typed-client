@@ -11,155 +11,291 @@ the query and its response are fully type-annotated
 
 ![](https://i.gyazo.com/5f0255b59f0f9c7eebdbe6c077e39cb0.gif)
 
-The JS query is then converted to the GraphQL query and variables
+The JS request object is then converted to the GraphQL query and variables
+
 ```graphql
-query ($v1: String!, $v2: SearchType!, $v3: Int) {
+query Query($v1: String!, $v2: SearchType!, $v3: Int) {
   search(query: $v1, type: $v2, first: $v3) {
     nodes {
-      ... on Repository {
-        name
-        owner {
-          ... on User {
-            name
-          }
-          ... on Organization {
-            name
-          }
-        }
-      }
+      ...f3
     }
   }
 }
+fragment f1 on User {
+  name
+}
+fragment f2 on Organization {
+  name
+}
+fragment f3 on Repository {
+  name
+  owner {
+    ...f1
+    ...f2
+  }
+}
 ```
+
 ```json
 { "v1": "graphql", "v2": "REPOSITORY", "v3": 5 }
 ```
 
-The generated client uses [`request`](https://github.com/request/request) for executing **Queries** and **Mutations**
-and [Apollo](https://www.apollographql.com/)'s
-[`subscriptions-transport-ws`](https://github.com/apollographql/subscriptions-transport-ws) for **Subscriptions**
-
-Subscriptions are wrapped in [RxJs](https://github.com/ReactiveX/rxjs)' `Observable` which is chained
-to the `SubscriptionClient` so that a connection is opened when you subscribe to the first subscription,
-shared among all subscriptions and closed when you unsubscribe from the last one.
-
-Notes on type annotation generation
-- all known Scalar types are converted to their Typescript counterparts
-- all unknown Scalar types are converted to type aliases for `any`
-- all Enum types are converted to Typescript enums, so you can import and use them in your code
-(even if you're not using Typescript)
-
 ## Install
 
 ```bash
-yarn add graphql-typed-client
-yarn global add graphql-typed-client
+yarn global add graphql-typed-client # needed for the CLI to work globally
+yarn add graphql-typed-client # needed for the generated client to work
 ```
 
 ## Generate the client
 
-To generate the client, run the command
+To generate the client, use the CLI tool
+
 ```bash
-generate-graphql-client http://my-server/graphql ./my-client
+generate-graphql-client
 ```
-The tool learns about the specified GraphQL endpoint by making a GET request with a schema introspection query
 
-If the endpoint only listens to POST requests or if it requires authorization, you can handle this by supplying
-a file with a function which should return the options for making a [`request`](https://github.com/request/request)
+```bash
+Usage: generate-graphql-client [options]
 
-For example, to generate a client for GitHub GraphQL API, you need to create a file like this:
+Options:
+  -o, --output <./myClient>                    output directory
+  -e, --endpoint <http://example.com/graphql>  GraphQL endpoint
+  -p, --post                                   use POST for introspection query
+  -s, --schema <./mySchema.graphql>            path to GraphQL schema definition file
+  -f, --fetcher <./schemaFetcher.js>           path to introspection query fetcher file
+  -c, --config <./myConfig.js>                 path to config file
+  -v, --verbose                                verbose output
+  -h, --help                                   output usage information
+```
+
+If your endpoint is able to respond to introspection query without authentication, provide the `endpoint` option
+(use `post` option to use POST request)
+
+```bash
+generate-graphql-client -e http://example.com/graphql -o myClient
+
+# or using POST
+generate-graphql-client -e http://example.com/graphql -p -o myClient
+```
+
+If your endpoint requires authentication or maybe some custom headers, use `fetcher` option to provide
+a custom fetcher function.
+We will pass [`fetch`](https://github.com/matthew-andrews/isomorphic-fetch) and [`qs`](https://github.com/ljharb/qs)
+instances to your function for convenience, but you can use anything you like to fetch the introspection query
+
+```bash
+generate-graphql-client -f customFetcher.js -o myClient
+```
+
 ```js
-// githubClientQuery.js
-module.exports = function (query, endpoint) {
-  return {
-    method: 'GET',
-    uri: endpoint,
-    qs: { query: query },
-    json: true,
+// customFetcher.js
+
+module.exports = function(query, fetch, qs) {
+  return fetch(`https://api.github.com/graphql?${qs.stringify({ query: query })}`, {
     headers: {
-      'User-Agent': 'My-GitHub-App',
-      'Authorization': 'bearer YOUR_GITHUB_API_TOKEN',
+      Authorization: 'bearer YOUR_GITHUB_API_TOKEN',
     },
-  }
+  }).then(r => r.json())
 }
 ```
-then run the command
+
+If instead of making a query to some endpoint, you just want to use a GraphQL schema definition, use `schema` option
+
 ```bash
-generate-graphql-client https://api.github.com/graphql ./github-client ./githubClientQuery.js
+generate-graphql-client -s mySchema.graphql -o myClient
+
+# this will also work
+generate-graphql-client -s "type User { name: String } type Query { users: [User] }" -o myClient
 ```
 
-## Instantiate the client
+Alternatively, you can use a JS or JSON config file to define how you want the client to be generated.
+Also, using the config file you can define more than one client.
 
-```typescript
-// clients.js
-import { GqlClient } from './my-client/GqlClient'
+The config file should contain an object or an array of objects, each representing a client to be generated.
+Object fields are named the same way as the CLI arguments described above + `options` field
+for passing various parsing/generation options (see [config.ts](src/config.ts) to learn more)
 
-export const myClient = GqlClient(
-  // provide a function which returns the options for making an HTTP call using `request` package
-  // (https://www.npmjs.com/package/request)
-  ({ query, variables }) => ({
-    uri: 'http://my-server/graphql',
-    method: 'POST',
-    body: { query, variables },
-    json: true,
-    headers: {
-      'Authorization': 'bearer MY_API_TOKEN',
-    },
-  }),
-  // if you want to enable GraphQL Subscriptions, provide the options object 
-  // for instantiating an Apollo's `SubscriptionClient` 
-  // (https://github.com/apollographql/subscriptions-transport-ws)
-  // P.S. `reconnect` and `lazy` options are already enabled by default
+```bash
+generate-graphql-client -c myConfig.js
+```
+
+```js
+// myConfig.js
+
+module.exports = [
   {
-    uri: 'ws://my-server/graphql-subscriptions-endpoint',
+    schema: 'type Query { hello: String }',
+    output: 'clients/simpleClient',
+  },
+  {
+    schema: 'schemas/mySchema.graphql',
+    output: 'clients/clientFromSchema',
+  },
+  {
+    endpoint: 'http://example.com/graphql',
+    post: true,
+    output: 'clients/exampleClient',
+  },
+  {
+    fetcher: 'customFetcher.js',
+    output: 'clients/customClient',
+  },
+  {
+    fetcher: (query, fetch, qs) =>
+      fetch(`https://api.github.com/graphql?${qs.stringify({ query })}`, {
+        headers: {
+          Authorization: 'bearer YOUR_GITHUB_API_TOKEN',
+        },
+      }).then(r => r.json()),
+    output: 'clients/githubClient',
+  },
+]
+```
+
+## Create the client instance
+
+To create the client instance, you have to call `createClient()` function that was generated with the client
+
+If you want to execute Queries and Mutations, provide a `fetcher` function.
+
+Just like with the fetcher that can be used for client generation, we will
+pass [`fetch`](https://github.com/matthew-andrews/isomorphic-fetch) and [`qs`](https://github.com/ljharb/qs) instances
+inside for convenience, but the function can be implemented in any way you want
+
+If you want to execute Subscriptions, provide `subscriptionCreatorOptions` object with `uri` and `options` fields, where
+`options` are `ClientOptions` passed down
+to [`subscriptions-transport-ws`](https://github.com/apollographql/subscriptions-transport-ws)
+(`reconnect` and `lazy` options are already enabled by default)
+
+```js
+// myClient.js
+
+import { createClient } from './clients/myClient/createClient'
+
+export const myClient = createClient({
+  fetcher: ({ query, variables }, fetch, qs) =>
+    fetch(`http://example.com/graphql?${qs.stringify({ query, variables })}`, {
+      headers: {
+        Authorization: 'bearer MY_TOKEN',
+      },
+    }).then(r => r.json()),
+  subscriptionCreatorOptions: {
+    uri: 'wss://example.com/graphql-subscriptions',
     options: {
       connectionParams: {
-        token: 'MY_API_TOKEN',
+        token: 'MY_TOKEN',
       },
     },
   },
-)
+})
 ```
 
 ## Use the client
 
 ```js
-import { myClient } from './clients'
+import { myClient } from './myClient'
 
-myClient.query(GQL_QUERY) // => Promise<{ data?: Query, errors?: any[] }>
-  .then(console.log)
-  
-myClient.mutation(GQL_MUTATION) // => Promise<{ data?: Mutation, errors?: any[] }>
-  .then(console.log)
+myClient
+  .query(REQUEST_OBJECT) // Promise<{ data?: Query, errors?: GraphQLError[] }>
+  .then(console.log.bind(console, 'query:'))
 
-myClient.subscription(GQL_SUBSCRIPTION) // => Observable<{ data?: Subscription, errors?: any[] }>
+myClient
+  .mutation(REQUEST_OBJECT) // Promise<{ data?: Mutation, errors?: GraphQLError[] }>
+  .then(console.log.bind(console, 'mutation:'))
+
+myClient
+  .subscription(REQUEST_OBJECT) // => Observable<{ data?: Subscription, errors?: GraphQLError[] }>
   .subscribe({
-    next: console.log
+    next: console.log.bind(console, 'next:'),
+    error: console.log.bind(console, 'error:'),
+    complete: console.log.bind(console, 'complete:'),
   })
 ```
-`GQL_QUERY`/`GQL_MUTATION`/`GQL_SUBSCRIPTION` is the object that will be converted into GraphQL request.
-Here is an example, to showcase the format:
+
+Where `REQUEST_OBJECT` is the JS object representing GraphQL request
+
+## Making GraphQL requests in JS
+
+The format for the request object is visually similar to an actual GraphQL query, so something like
+
+<!-- prettier-ignore -->
+```js
+query({
+  user: [{ id: 'USER_ID' }, {
+      username: 1,
+      email: 1,
+      on_AdminUser: {
+        isSuperAdmin: 1,
+      },
+  }],
+})
+```
+
+is easily recognizable as
+
+```graphql
+query {
+  user(id: "USER_ID") {
+    username
+    email
+    ... on AdminUser {
+      isSuperAdmin
+    }
+  }
+}
+```
+
+Here are the rules governing the format:
+
+- fields with scalar types are written as
+
+  `name: 1` or `name: true`
+
+- fields with object types are written as JS objects
+
+  `user: { name: 1 }`
+
+- fields that have arguments are written as arrays with argument object and the field selection
+
+  `user: [{ id: 'USER_ID' }, { name: 1 }]`
+
+  - if the field has arguments, but the return type is scalar, just pass the array with argument object
+
+    `userCount: [{ status: 'active' }]`
+
+  - if all the arguments for the field are optional, you can omit the array and just pass the field selection
+
+    `friend: { name: 1 }` is the same as `friend: [{}, { name: 1 }]`
+
+- fields with `union` or `interface` types can have fragments defined on them to select fields of a specific type
+
+  `on_AdminUser: { superAdmin: 1 }`
+
+- **additionally**, there is a special `__scalar` field, that can be included in the field selection to automatically include
+  all scalar fields from an object/interface type
+  (excluding `__typename`, which you have to request manually if you need it)
+
+  `user: { __scalar: 1 }`
+
+Here is an example request object, showing all possible field types
+
+<!-- prettier-ignore -->
 ```js
 myClient.query({
-  // object field with arguments
   user: [{ id: 'USER_ID' }, {
-    // scalar field
     username: 1,
     email: 1,
-    // scalar field with arguments
     wasEmployed: [{ recently: true }],
-    // object field without arguments
     friends: {
       username: 1,
       email: 1,
     },
     posts: [{ limit: 5 }, {
-      // automatically request all scalar fields
       __scalar: 1,
     }],
     pets: {
       name: 1,
-      // fragment to request a fields in a specific type on Union or Interface types
       on_Cat: {
         eyeColor: 1,
       },
@@ -171,68 +307,57 @@ myClient.query({
 })
 ```
 
-And here is the GitHub API example
+When executed, it will send the following GraphQL `query` and `variables` to the server
 
-```js
-import { GqlClient } from './github-client/GqlClient'
-import { SearchType } from './github-client/types'
+```json
+{ "v1": "USER_ID", "v2": true, "v3": 5 }
+```
 
-const GITHUB_TOKEN = 'YOUR_GITHUB_API_TOKEN'
-
-const client = GqlClient(gql => ({
-  uri: 'https://api.github.com/graphql',
-  method: 'POST',
-  body: gql,
-  json: true,
-  headers: {
-    'User-Agent': 'My-GitHub-App',
-    'Authorization': `bearer ${GITHUB_TOKEN}`,
-  },
-}))
-
-async function main() {
-  const response = await client.query({
-    search: [{
-      query: 'graphql',
-      // generated enum type
-      type: SearchType.REPOSITORY,
-      first: 5,
-    }, {
-      nodes: {
-        on_Repository: {
-          name: 1,
-          owner: {
-            __typename: 1,
-            on_User: {
-              name: 1,
-            },
-            on_Organization: {
-              name: 1,
-            },
-          },
-        },
-      },
-    }],
-  })
-
-  if (response.data) {
-    console.log('RESULTS', response.data.search.nodes)
-  } else {
-    console.log('ERRORS', response.errors)
+```graphql
+query($v1: ID!, $v2: Boolean, $v3: Int) {
+  user(id: $v1) {
+    username
+    email
+    wasEmployed(recently: $v2)
+    friends {
+      username
+      email
+    }
+    posts(limit: $v3) {
+      ...f1
+    }
+    pets {
+      name
+      ...f2
+      ...f3
+    }
   }
 }
+fragment f1 on Post {
+  id
+  title
+  content
+}
+fragment f2 on Cat {
+  eyeColor
+}
+fragment f3 on Snake {
+  length
+}
+```
 
-main().catch(console.log)
-```
-```bash
-RESULTS [ { name: 'graphql',
-    owner: { __typename: 'Organization', name: 'Facebook' } },
-  { name: 'graphql',
-    owner: { __typename: 'Organization', name: 'graphql-go' } },
-  { name: 'graphql.github.io',
-    owner: { __typename: 'Organization', name: 'Facebook GraphQL' } },
-  { name: 'graphql-js',
-    owner: { __typename: 'Organization', name: 'Facebook GraphQL' } },
-  { name: 'awesome-graphql',
-    owner: { __typename: 'User', name: 'C. T. Lin' } } ]
-```
+## Notes on type annotation generation
+
+- all known Scalar types are converted to their Typescript counterparts
+- all unknown Scalar types are converted to type aliases for `any`
+- all Enum types are converted to Typescript enums, so you can import and use them in your code
+  (even if you're not using Typescript)
+
+## Notes on subscriptions
+
+The generated client uses [Apollo](https://www.apollographql.com/)'s
+[`subscriptions-transport-ws`](https://github.com/apollographql/subscriptions-transport-ws) for executing **Subscriptions**
+
+Subscriptions are wrapped in [RxJs](https://github.com/ReactiveX/rxjs)' `Observable` which is chained
+to the `SubscriptionClient` so that a connection is opened when you subscribe to the first subscription,
+shared among all subscriptions and closed when you unsubscribe from the last one.
