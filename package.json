@@ -1,6 +1,21 @@
 {
   "name": "graphql-typed-client",
-  "version": "1.0.0",
+  "keywords": [
+    "gql",
+    "graphql",
+    "typescript",
+    "ts",
+    "javascript",
+    "js",
+    "interfaces",
+    "types",
+    "d.ts",
+    "typings",
+    "codegen",
+    "code-generation",
+    "node"
+  ],
+  "version": "1.0.1",
   "main": "./dist/index.js",
   "types": "./src/index.ts",
   "repository": "git@github.com:helios1138/graphql-typed-client.git",
