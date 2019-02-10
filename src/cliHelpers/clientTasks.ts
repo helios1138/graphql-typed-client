@@ -7,6 +7,7 @@ import { RenderContext } from '../render/common/RenderContext'
 import { renderRequestTypes } from '../render/requestTypes/renderRequestTypes'
 import { renderResponseTypes } from '../render/responseTypes/renderResponseTypes'
 import { renderSchema } from '../render/schema/renderSchema'
+import { renderTypeGuards } from '../render/typeGuards/renderTypeGuards'
 import { renderTypeMap } from '../render/typeMap/renderTypeMap'
 
 const schemaGqlFile = 'schema.graphql'
@@ -45,6 +46,7 @@ export const clientTasks = (config: Config): ListrTask[] => {
 
                 renderResponseTypes(ctx.schema, renderCtx)
                 renderRequestTypes(ctx.schema, renderCtx)
+                renderTypeGuards(ctx.schema, renderCtx)
 
                 await writeFileToPath([output, schemaTypesFile], renderCtx.toCode('typescript'))
               },

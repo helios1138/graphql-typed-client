@@ -6,7 +6,9 @@ import { renderTyping } from '../common/renderTyping'
 export const objectType = (type: GraphQLObjectType | GraphQLInterfaceType, ctx: RenderContext) => {
   const fields = Object.keys(type.getFields()).map(fieldName => type.getFields()[fieldName])
 
-  const fieldStrings = fields.map(f => `${fieldComment(f)}${f.name}${renderTyping(f.type, false, false)}`)
+  const fieldStrings = fields
+    .map(f => `${fieldComment(f)}${f.name}${renderTyping(f.type, false, false)}`)
+    .concat(['__typename:String'])
 
   const interfaceNames = isObjectType(type) ? type.getInterfaces().map(i => i.name) : []
 

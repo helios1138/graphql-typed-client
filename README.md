@@ -346,6 +346,37 @@ fragment f3 on Snake {
 }
 ```
 
+## Type guards
+
+Additionally, Typescript [type guard functions](https://www.typescriptlang.org/docs/handbook/advanced-types.html) are
+generated for every object, interface and union type in your schema
+
+<!-- prettier-ignore -->
+```typescript
+import { isCat, isSnake } from './clients/testClient/schema'
+
+myClient
+  .query({
+    pet: [{ id: 'PET_ID' }, {
+      name: 1,
+      on_Cat: { eyeColor: 1 },
+      on_Snake: { length: 1 },
+    }],
+  })
+  .then(result => {
+    if (!result.data) return
+    const pet = result.data.pet
+
+    console.log(pet.name) // pet type is abstract type Pet, so you only get access to shared fields
+
+    if (isCat(pet)) {
+      console.log(pet.eyeColor) // pet type is Cat, so you get access to fields of the specific type
+    } else if (isSnake(pet)) {
+      console.log(pet.length) // same here
+    }
+  })
+```
+
 ## Notes on type annotation generation
 
 - all known Scalar types are converted to their Typescript counterparts
