@@ -5,6 +5,7 @@ export interface ObjectI extends A, B {
   b2: Int
   c1: Int
   c2: Int
+  __typename: String
 }
 
 export interface ObjectF {
@@ -16,12 +17,14 @@ export interface ObjectF {
   maybeValueMaybeList: [Int | null] | null
   nested: [[[Int]]]
   maybeNested: [[[Int | null] | null] | null] | null
+  __typename: String
 }
 
 export interface Object {
   some: Int | null
   other: Int | null
   another: Int | null
+  __typename: String
 }
 
 /** single line description */
@@ -35,6 +38,7 @@ export interface ObjectD {
    * single line description
    */
   another: Int | null
+  __typename: String
 }
 
 /**
@@ -53,4 +57,5 @@ export interface ObjectMD {
    * description
    */
   other: Int | null
+  __typename: String
 }

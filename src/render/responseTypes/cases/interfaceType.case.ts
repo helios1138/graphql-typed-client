@@ -7,12 +7,14 @@ export interface InterfaceF {
   maybeValueMaybeList: [Int | null] | null
   nested: [[[Int]]]
   maybeNested: [[[Int | null] | null] | null] | null
+  __typename: String
 }
 
 export interface Interface {
   some: Int | null
   other: Int | null
   another: Int | null
+  __typename: String
 }
 
 /** single line description */
@@ -26,6 +28,7 @@ export interface InterfaceD {
    * single line description
    */
   another: Int | null
+  __typename: String
 }
 
 /**
@@ -44,4 +47,5 @@ export interface InterfaceMD {
    * description
    */
   other: Int | null
+  __typename: String
 }
