@@ -1,4 +1,4 @@
-# graphql-typed-client [![npm version](https://img.shields.io/npm/v/graphql-typed-client.svg)](https://www.npmjs.com/package/graphql-typed-client)
+# graphql-typed-client [![npm version](https://img.shields.io/npm/v/graphql-typed-client.svg?style=flat-square)](https://www.npmjs.com/package/graphql-typed-client) ![](https://img.shields.io/travis/helios1138/graphql-typed-client/master.svg?style=flat-square)
 
 A tool which **automatically generates** a set of TypeScript interfaces
 and a small client library **for any GraphQL endpoint**
