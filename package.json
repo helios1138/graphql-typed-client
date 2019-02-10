@@ -23,8 +23,9 @@
   "license": "MIT",
   "scripts": {
     "build": "rm -rf ./dist && tsc && chmod +x ./dist/cli.js",
+    "test": "jest",
     "prepublishOnly": "yarn build && yarn test",
-    "test": "jest"
+    "postpublish": "git tag v$npm_package_version && git push --tags"
   },
   "bin": {
     "generate-graphql-client": "./dist/cli.js"
