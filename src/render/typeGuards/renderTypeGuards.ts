@@ -1,4 +1,5 @@
 import { GraphQLSchema, isInterfaceType, isObjectType, isUnionType } from 'graphql'
+import { excludedTypes } from '../common/excludedTypes'
 import { RenderContext } from '../common/RenderContext'
 
 const renderTypeGuard = (target: string, possible: string[]) => `
@@ -11,6 +12,8 @@ const renderTypeGuard = (target: string, possible: string[]) => `
 
 export const renderTypeGuards = (schema: GraphQLSchema, ctx: RenderContext) => {
   for (const name in schema.getTypeMap()) {
+    if (excludedTypes.includes(name)) continue
+
     const type = schema.getTypeMap()[name]
 
     if (isUnionType(type)) {

@@ -1,4 +1,5 @@
 import { GraphQLSchema, isEnumType, isInterfaceType, isObjectType, isScalarType, isUnionType } from 'graphql'
+import { excludedTypes } from '../common/excludedTypes'
 import { RenderContext } from '../common/RenderContext'
 import { objectType } from './objectType'
 import { scalarType } from './scalarType'
@@ -31,6 +32,7 @@ export const renderTypeMap = (schema: GraphQLSchema, ctx: RenderContext) => {
   const result: TypeMap = {}
 
   Object.keys(schema.getTypeMap())
+    .filter(t => !excludedTypes.includes(t))
     .map(t => schema.getTypeMap()[t])
     .map(t => {
       if (isObjectType(t) || isInterfaceType(t)) result[t.name] = objectType(t, ctx)
