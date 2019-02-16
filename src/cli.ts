@@ -2,6 +2,7 @@
 
 import program from 'commander'
 import Listr from 'listr'
+import chalk from 'chalk'
 import { task } from './cliHelpers/task'
 import { validateConfigs } from './cliHelpers/validateConfigs'
 
@@ -36,4 +37,4 @@ if (!validateConfigs(configs)) program.help()
 
 new Listr(configs.map(config => task(config)), { renderer: program.verbose ? 'verbose' : 'default' })
   .run()
-  .catch(console.log)
+  .catch(e => console.log(chalk.red(e.stack)))
