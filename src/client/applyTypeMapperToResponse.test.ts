@@ -67,7 +67,7 @@ describe('applyTypeMapperToResponse', () => {
     )
 
     expect(typeof result.data.object.other).toBe('number')
-    expect(typeof result.data.object.another).toBe('string')
+    expect(result.data.object.another).toBeNull()
     expect(result.data.object.field).toBeInstanceOf(Date)
     expect(result.data.object.fieldRequired).toBeInstanceOf(Date)
     expect(result.data.object.fieldArrayRequired[0]).toBeInstanceOf(Date)
