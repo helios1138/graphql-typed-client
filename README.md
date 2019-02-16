@@ -1,13 +1,7 @@
 # graphql-typed-client [![npm version](https://img.shields.io/npm/v/graphql-typed-client.svg?style=flat-square)](https://www.npmjs.com/package/graphql-typed-client) [![Build Status](https://img.shields.io/travis/helios1138/graphql-typed-client/master.svg?style=flat-square)](https://travis-ci.org/helios1138/graphql-typed-client)
 
-A tool which **automatically generates** a set of TypeScript interfaces
-and a small client library **for any GraphQL endpoint**
-
-The client library will take a specially-formatted plain Javascript object and turn it into a GraphQL query
-
-**Writing GraphQL queries in Javascript** allows for the use of code-completion and type-checking in your IDE, as both
-the query and its response are fully type-annotated
-(and code-completion works **even if your project itself does not use Typescript**)
+A tool that generates a strongly typed client library for any GraphQL endpoint. The client allows writing GraphQL queries
+as plain JS objects (with type safety, awesome code completion experience, custom scalar type mapping, type guards and more)
 
 ![](https://i.gyazo.com/5f0255b59f0f9c7eebdbe6c077e39cb0.gif)
 
@@ -344,6 +338,75 @@ fragment f2 on Cat {
 fragment f3 on Snake {
   length
 }
+```
+
+## Custom scalar type mapping
+
+By default, all custom scalar types are generated as aliases to TypeScript's `any`
+
+You can override this behavior by providing your own type mapper that will be used during the schema generation and applied
+to query responses
+
+For example, let's say you have a custom `Date` type
+
+```graphql
+scalar Date
+```
+
+By default, the we will generate it as
+
+```typescript
+export type Date = any
+```
+
+With the type mapper present, we can generate it as
+
+```typescript
+export type Date = ReturnType<typeof typeMapper.Date>
+```
+
+To do that, create a type mapper file somewhere in your app
+
+```typescript
+// path/to/typeMapper.ts
+
+import moment, { Moment } from 'moment'
+
+export const typeMapper = {
+  Date: (value: string): Moment => moment(value),
+}
+```
+
+Add `typeMapper` option to client generation config
+
+```js
+module.exports = {
+  endpoint: 'http://example.com/graphql',
+  output: 'clients/myClient',
+  options: { typeMapper: { location: 'path/to/typeMapper', types: ['Date'] } },
+}
+```
+
+Now when you generate the client, all fields of `Date` type in query responses will be run through the provided mapping
+function, and the return type of that function is used as the field type in TypeScript (enabling correct code completion and
+type checking)
+
+<!-- prettier-ignore -->
+```typescript
+myClient
+  .query({
+    user: [{ id: 'USER_ID' }, {
+      name: 1,
+      birthday: 1,
+    }],
+  })
+  .then(result => {
+    if (!result.data) return
+    const user = result.data.user
+
+    // moment's methods are now available
+    console.log(user.birthday.startOf('day').toISOString())
+  })
 ```
 
 ## Type guards

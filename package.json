@@ -1,5 +1,6 @@
 {
   "name": "graphql-typed-client",
+  "description": "A tool that generates a strongly typed client library for any GraphQL endpoint. The client allows writing GraphQL queries as plain JS objects (with type safety, awesome code completion experience, custom scalar type mapping, type guards and more)",
   "keywords": [
     "gql",
     "graphql",
@@ -15,7 +16,7 @@
     "code-generation",
     "node"
   ],
-  "version": "1.1.2",
+  "version": "1.2.0",
   "main": "./dist/index.js",
   "types": "./src/index.ts",
   "repository": "git@github.com:helios1138/graphql-typed-client.git",
