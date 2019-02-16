@@ -1,4 +1,4 @@
-import { buildSchema } from 'graphql'
+import { assertValidSchema, buildSchema } from 'graphql'
 import { ListrTask } from 'listr'
 import { Config } from '../config'
 import { readFileFromPath, requireModuleFromPath } from '../helpers/files'
@@ -40,6 +40,7 @@ export const schemaTask = (config: Config): ListrTask => {
         }
 
         ctx.schema = buildSchema(resolvedSchema, config.options && config.options.schemaBuild)
+        assertValidSchema(ctx.schema)
       },
     }
   } else {
