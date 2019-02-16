@@ -11,7 +11,7 @@ export const renderTypeMappedAlias = (type: GraphQLNamedType, ctx: RenderContext
   if (!ctx.config || !ctx.config.options || !ctx.config.options.typeMapper || !ctx.config.output) return
 
   if (hasTypeMappedAlias(type, ctx)) {
-    const alias = ctx.addImport(ctx.config.options.typeMapper.location, true)
+    const alias = ctx.addImport(ctx.config.options.typeMapper.location, false, 'typeMapper')
     ctx.addCodeBlock(`export type ${type.name} = ReturnType<typeof ${alias}.${type.name}>`)
   }
 }

@@ -1,8 +1,8 @@
 import { GraphQLSchema } from 'graphql'
 import { BuiltInParserName } from 'prettier'
-import path from 'path'
 import { Config } from '../../config'
 import { prettify } from '../../helpers/prettify'
+import { relativeImportPath } from './relativeImportPath'
 
 interface Import {
   isDefault: boolean
@@ -27,8 +27,7 @@ export class RenderContext {
 
   addImport(from: string, isDefault: boolean, module?: string) {
     if (this.config && this.config.output) {
-      from = path.relative(this.config.output, from)
-      if (from[0] !== '.') from = `./${from}`
+      from = relativeImportPath(this.config.output, from)
     }
 
     if (!this.imports[from]) this.imports[from] = []
