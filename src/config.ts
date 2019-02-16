@@ -7,6 +7,7 @@ export interface Options {
   schemaValidation?: GraphQLSchemaValidationOptions
   schemaPrint?: SchemaPrintOptions
   schemaBuild?: BuildSchemaOptions & ParseOptions
+  typeMapper?: { location: string; types: [string] }
 }
 
 export interface Config {
