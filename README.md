@@ -443,7 +443,7 @@ myClient
 ## Notes on type annotation generation
 
 - all known Scalar types are converted to their Typescript counterparts
-- all unknown Scalar types are converted to type aliases for `any`
+- all unknown Scalar types are converted to type aliases for `any` unless type mapper is provided
 - all Enum types are converted to Typescript enums, so you can import and use them in your code
   (even if you're not using Typescript)
 
