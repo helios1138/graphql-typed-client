@@ -34,4 +34,6 @@ const configs: Config[] = program.config
 
 if (!validateConfigs(configs)) program.help()
 
-new Listr(configs.map(config => task(config)), { renderer: program.verbose ? 'verbose' : 'default' }).run().catch(() => {})
+new Listr(configs.map(config => task(config)), { renderer: program.verbose ? 'verbose' : 'default' })
+  .run()
+  .catch(console.log)

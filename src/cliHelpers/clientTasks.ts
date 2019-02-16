@@ -34,7 +34,7 @@ export const clientTasks = (config: Config): ListrTask[] => {
             {
               title: `writing ${schemaGqlFile}`,
               task: async ctx => {
-                const renderCtx = new RenderContext(ctx.schema, config.options)
+                const renderCtx = new RenderContext(ctx.schema, config)
                 renderSchema(ctx.schema, renderCtx)
                 await writeFileToPath([output, schemaGqlFile], renderCtx.toCode('graphql'))
               },
@@ -42,7 +42,7 @@ export const clientTasks = (config: Config): ListrTask[] => {
             {
               title: `writing ${schemaTypesFile}`,
               task: async ctx => {
-                const renderCtx = new RenderContext(ctx.schema, config.options)
+                const renderCtx = new RenderContext(ctx.schema, config)
 
                 renderResponseTypes(ctx.schema, renderCtx)
                 renderRequestTypes(ctx.schema, renderCtx)
@@ -54,7 +54,7 @@ export const clientTasks = (config: Config): ListrTask[] => {
             {
               title: `writing ${typeMapFile}`,
               task: async ctx => {
-                const renderCtx = new RenderContext(ctx.schema, config.options)
+                const renderCtx = new RenderContext(ctx.schema, config)
 
                 renderTypeMap(ctx.schema, renderCtx)
 
@@ -64,7 +64,7 @@ export const clientTasks = (config: Config): ListrTask[] => {
             {
               title: `writing ${clientFile}`,
               task: async ctx => {
-                const renderCtx = new RenderContext(ctx.schema, config.options)
+                const renderCtx = new RenderContext(ctx.schema, config)
 
                 renderClient(ctx.schema, renderCtx)
 
@@ -74,7 +74,7 @@ export const clientTasks = (config: Config): ListrTask[] => {
             {
               title: `writing ${clientTypesFile}`,
               task: async ctx => {
-                const renderCtx = new RenderContext(ctx.schema, config.options)
+                const renderCtx = new RenderContext(ctx.schema, config)
 
                 renderClientDefinition(ctx.schema, renderCtx)
 
