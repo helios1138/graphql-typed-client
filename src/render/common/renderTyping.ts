@@ -46,4 +46,5 @@ export const renderTyping = (
   type: GraphQLOutputType | GraphQLInputType,
   undefinableValues: boolean,
   undefinableFields: boolean,
-) => render(type, false, true, undefinableValues, undefinableFields)
+  root = true,
+) => render(type, false, root, undefinableValues, undefinableFields)

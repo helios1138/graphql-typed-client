@@ -11,6 +11,7 @@ import {
 } from 'graphql'
 import { fieldComment, typeComment } from '../common/comment'
 import { RenderContext } from '../common/RenderContext'
+import { renderTyping } from '../common/renderTyping'
 import { toArgsString } from '../common/toArgsString'
 import { requestTypeName } from '../requestTypes/requestTypeName'
 
@@ -27,11 +28,14 @@ export const objectType = (type: GraphQLObjectType | GraphQLInterfaceType, ctx: 
     const argsOptional = !field.args.find(a => isNonNullType(a.type))
     const argsString = toArgsString(field)
 
+    // todo: avoid using promise here, pass wrapper as generic?
+    const executeReturnType = `Promise<${renderTyping(field.type, false, false, false)}|undefined>`
+
     const fieldType = resolvable
       ? stopChain
-        ? `{execute:(request:${requestTypeName(resolvedType)})=>void}`
-        : `${chainTypeName(resolvedType)}&{execute:(request:${requestTypeName(resolvedType)})=>void}`
-      : `{execute:()=>void}`
+        ? `{execute:(request:${requestTypeName(resolvedType)})=>${executeReturnType}}`
+        : `${chainTypeName(resolvedType)}&{execute:(request:${requestTypeName(resolvedType)})=>${executeReturnType}}`
+      : `{execute:()=>${executeReturnType}}`
 
     const result = []
 
