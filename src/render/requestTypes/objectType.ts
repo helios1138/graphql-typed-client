@@ -1,20 +1,8 @@
-import {
-  getNamedType,
-  GraphQLField,
-  GraphQLInterfaceType,
-  GraphQLObjectType,
-  isEnumType,
-  isInterfaceType,
-  isScalarType,
-} from 'graphql'
-import { argumentComment, fieldComment, typeComment } from '../common/comment'
+import { getNamedType, GraphQLInterfaceType, GraphQLObjectType, isEnumType, isInterfaceType, isScalarType } from 'graphql'
+import { fieldComment, typeComment } from '../common/comment'
 import { RenderContext } from '../common/RenderContext'
-import { renderTyping } from '../common/renderTyping'
+import { toArgsString } from '../common/toArgsString'
 import { requestTypeName } from './requestTypeName'
-
-const toArgsString = (field: GraphQLField<any, any, any>) => {
-  return `{${field.args.map(a => `${argumentComment(a)}${a.name}${renderTyping(a.type, false, true)}`).join(',')}}`
-}
 
 export const objectType = (type: GraphQLObjectType | GraphQLInterfaceType, ctx: RenderContext) => {
   const fieldStrings = Object.keys(type.getFields()).map(fieldName => {
