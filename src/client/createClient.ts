@@ -80,16 +80,20 @@ export const createClient = <QR extends Fields, QC, Q, MR extends Fields, MC, M,
       : resultObservable
   }
 
+  // todo: throw on errors and data === null
+  // todo: use custom error class
+  const mapResponse = (path: string[]) => (result: any) => {
+    return get(result, ['data', ...path], null)
+  }
+
   return {
     query,
     mutation,
     subscription,
     chain: {
-      query: <any>chain((path, request) => query(request).then(result => get(result, ['data', ...path], null))),
-      mutation: <any>chain((path, request) => mutation(request).then(result => get(result, ['data', ...path], null))),
-      subscription: <any>(
-        chain((path, request) => subscription(request).pipe(map(result => get(result, ['data', ...path], null))))
-      ),
+      query: <any>chain((path, request) => query(request).then(mapResponse(path))),
+      mutation: <any>chain((path, request) => mutation(request).then(mapResponse(path))),
+      subscription: <any>chain((path, request) => subscription(request).pipe(map(mapResponse(path)))),
     },
   }
 }
