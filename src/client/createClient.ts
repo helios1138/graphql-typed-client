@@ -85,17 +85,11 @@ export const createClient = <QR extends Fields, QC, Q, MR extends Fields, MC, M,
     mutation,
     subscription,
     chain: {
-      get query() {
-        return <QC>(<any>chain((path, request) => query(request).then(result => get(result, ['data', ...path], null))))
-      },
-      get mutation() {
-        return <MC>(<any>chain((path, request) => mutation(request).then(result => get(result, ['data', ...path], null))))
-      },
-      get subscription() {
-        return <SC>(
-          (<any>chain((path, request) => subscription(request).pipe(map(result => get(result, ['data', ...path], null)))))
-        )
-      },
+      query: <any>chain((path, request) => query(request).then(result => get(result, ['data', ...path], null))),
+      mutation: <any>chain((path, request) => mutation(request).then(result => get(result, ['data', ...path], null))),
+      subscription: <any>(
+        chain((path, request) => subscription(request).pipe(map(result => get(result, ['data', ...path], null))))
+      ),
     },
   }
 }
