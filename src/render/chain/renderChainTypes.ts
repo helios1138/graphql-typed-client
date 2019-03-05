@@ -9,6 +9,9 @@ export const renderChainTypes = (schema: GraphQLSchema, ctx: RenderContext) => {
 
     const type = schema.getTypeMap()[name]
 
-    if (isObjectType(type) || isInterfaceType(type)) objectType(type, ctx)
+    if (isObjectType(type) || isInterfaceType(type)) {
+      objectType(type, ctx, 'Promise')
+      objectType(type, ctx, 'Observable')
+    }
   }
 }

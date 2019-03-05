@@ -15,9 +15,15 @@ import { renderTyping } from '../common/renderTyping'
 import { toArgsString } from '../common/toArgsString'
 import { requestTypeName } from '../requestTypes/requestTypeName'
 
-export const chainTypeName = (type: GraphQLNamedType) => `${type.name}Chain`
+const packageJson = require('../../../package.json')
 
-export const objectType = (type: GraphQLObjectType | GraphQLInterfaceType, ctx: RenderContext) => {
+export const chainTypeName = (type: GraphQLNamedType, wrapper: 'Promise' | 'Observable') => `${type.name}${wrapper}Chain`
+
+export const objectType = (
+  type: GraphQLObjectType | GraphQLInterfaceType,
+  ctx: RenderContext,
+  wrapper: 'Promise' | 'Observable',
+) => {
   const fieldStrings = Object.keys(type.getFields()).map(fieldName => {
     const field = type.getFields()[fieldName]
     const resolvedType = getNamedType(field.type)
@@ -28,13 +34,14 @@ export const objectType = (type: GraphQLObjectType | GraphQLInterfaceType, ctx: 
     const argsOptional = !field.args.find(a => isNonNullType(a.type))
     const argsString = toArgsString(field)
 
-    // todo: avoid using promise here, pass wrapper as generic?
-    const executeReturnType = `Promise<${renderTyping(field.type, false, false, false)}|undefined>`
+    const executeReturnType = `${wrapper}<${renderTyping(field.type, false, false, false)}|undefined>`
 
     const fieldType = resolvable
       ? stopChain
         ? `{execute:(request:${requestTypeName(resolvedType)})=>${executeReturnType}}`
-        : `${chainTypeName(resolvedType)}&{execute:(request:${requestTypeName(resolvedType)})=>${executeReturnType}}`
+        : `${chainTypeName(resolvedType, wrapper)}&{execute:(request:${requestTypeName(
+            resolvedType,
+          )})=>${executeReturnType}}`
       : `{execute:()=>${executeReturnType}}`
 
     const result = []
@@ -50,5 +57,9 @@ export const objectType = (type: GraphQLObjectType | GraphQLInterfaceType, ctx: 
     return `${fieldComment(field)}${field.name}:${result.join('&')}`
   })
 
-  ctx.addCodeBlock(`${typeComment(type)}export interface ${chainTypeName(type)}{${fieldStrings.join(',')}}`)
+  if (wrapper === 'Observable') {
+    ctx.addImport(packageJson.name, false, 'Observable', true, true)
+  }
+
+  ctx.addCodeBlock(`${typeComment(type)}export interface ${chainTypeName(type, wrapper)}{${fieldStrings.join(',')}}`)
 }

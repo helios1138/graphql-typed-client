@@ -14,22 +14,22 @@ export const renderClientDefinition = (schema: GraphQLSchema, ctx: RenderContext
   const subscriptionType = schema.getSubscriptionType()
 
   if (queryType) {
-    types.push(requestTypeName(queryType), chainTypeName(queryType), queryType.name)
-    imports.push(requestTypeName(queryType), chainTypeName(queryType), queryType.name)
+    types.push(requestTypeName(queryType), chainTypeName(queryType, 'Promise'), queryType.name)
+    imports.push(requestTypeName(queryType), chainTypeName(queryType, 'Promise'), queryType.name)
   } else {
     types.push('never', 'never', 'never')
   }
 
   if (mutationType) {
-    types.push(requestTypeName(mutationType), chainTypeName(mutationType), mutationType.name)
-    imports.push(requestTypeName(mutationType), chainTypeName(mutationType), mutationType.name)
+    types.push(requestTypeName(mutationType), chainTypeName(mutationType, 'Promise'), mutationType.name)
+    imports.push(requestTypeName(mutationType), chainTypeName(mutationType, 'Promise'), mutationType.name)
   } else {
     types.push('never', 'never', 'never')
   }
 
   if (subscriptionType) {
-    types.push(requestTypeName(subscriptionType), chainTypeName(subscriptionType), subscriptionType.name)
-    imports.push(requestTypeName(subscriptionType), chainTypeName(subscriptionType), subscriptionType.name)
+    types.push(requestTypeName(subscriptionType), chainTypeName(subscriptionType, 'Observable'), subscriptionType.name)
+    imports.push(requestTypeName(subscriptionType), chainTypeName(subscriptionType, 'Observable'), subscriptionType.name)
   } else {
     types.push('never', 'never', 'never')
   }
