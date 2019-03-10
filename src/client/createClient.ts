@@ -1,6 +1,6 @@
 import 'isomorphic-fetch'
 import qs from 'qs'
-import { ExecutionResult } from 'graphql'
+import { ExecutionResult, GraphQLError } from 'graphql'
 import { NEVER, Observable } from 'rxjs'
 import { get } from 'lodash'
 import { map } from 'rxjs/operators'
@@ -9,6 +9,16 @@ import { chain } from './chain'
 import { LinkedType } from './linkTypeMap'
 import { Fields, Gql, requestToGql } from './requestToGql'
 import { getSubscriptionCreator, SubscriptionCreatorOptions } from './getSubscriptionCreator'
+
+export class ClientError extends Error {
+  constructor(message?: string, public errors?: ReadonlyArray<GraphQLError>) {
+    super(message)
+
+    new.target.prototype.name = new.target.name
+    Object.setPrototypeOf(this, new.target.prototype)
+    if (Error.captureStackTrace) Error.captureStackTrace(this, ClientError)
+  }
+}
 
 export interface Fetcher {
   (gql: Gql, fetchImpl: typeof fetch, qsImpl: typeof qs): Promise<ExecutionResult<any>>
@@ -80,9 +90,10 @@ export const createClient = <QR extends Fields, QC, Q, MR extends Fields, MC, M,
       : resultObservable
   }
 
-  // todo: throw on errors and data === null
-  // todo: use custom error class
-  const mapResponse = (path: string[]) => (result: any) => {
+  const mapResponse = (path: string[]) => (result: ExecutionResult) => {
+    if (result.errors) throw new ClientError(`Response contains errors`, result.errors)
+    if (!result.data) throw new ClientError('Response data is empty')
+
     return get(result, ['data', ...path], null)
   }
 
