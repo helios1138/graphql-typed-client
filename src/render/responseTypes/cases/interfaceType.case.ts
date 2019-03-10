@@ -1,12 +1,12 @@
 export interface InterfaceF {
   value: Int
   maybeValue: Int | null
-  valueList: [Int]
-  maybeValueList: [Int | null]
-  valueMaybeList: [Int] | null
-  maybeValueMaybeList: [Int | null] | null
-  nested: [[[Int]]]
-  maybeNested: [[[Int | null] | null] | null] | null
+  valueList: Int[]
+  maybeValueList: (Int | null)[]
+  valueMaybeList: Int[] | null
+  maybeValueMaybeList: (Int | null)[] | null
+  nested: Int[][][]
+  maybeNested: (((Int | null)[] | null)[] | null)[] | null
   __typename: String
 }
 

@@ -13,7 +13,7 @@ type Object {
 
   objectList: [Object]
   objectListOptionalArgs(arg: String): [Object]
-  objectListRequiredArgs(arg: String!): [Object]
+  objectListRequiredArgs(arg: String!): [Object!]!
 }
 
 type Query {

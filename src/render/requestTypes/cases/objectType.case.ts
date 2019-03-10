@@ -42,12 +42,12 @@ export interface ObjectRequest {
       value: Int
       /** single line description */
       maybeValue?: Int | null
-      valueList: [Int]
-      maybeValueList: [Int | null]
-      valueMaybeList?: [Int] | null
-      maybeValueMaybeList?: [Int | null] | null
-      nested: [[[Int]]]
-      maybeNested?: [[[Int | null] | null] | null] | null
+      valueList: Int[]
+      maybeValueList: (Int | null)[]
+      valueMaybeList?: Int[] | null
+      maybeValueMaybeList?: (Int | null)[] | null
+      nested: Int[][][]
+      maybeNested?: (((Int | null)[] | null)[] | null)[] | null
     }
   ]
   __typename?: boolean | number
