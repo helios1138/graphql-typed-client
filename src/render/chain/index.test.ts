@@ -7,5 +7,5 @@ test('objectType', () =>
     __dirname,
     'objectType',
     (type, ctx) => objectType(<GraphQLObjectType | GraphQLInterfaceType>type, ctx, 'Promise'),
-    ['Object'],
+    ['Object', 'ObjectRequired'],
   ))
