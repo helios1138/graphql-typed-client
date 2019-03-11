@@ -3,9 +3,15 @@
 A tool that generates a strongly typed client library for any GraphQL endpoint. The client allows writing GraphQL queries
 as plain JS objects (with type safety, awesome code completion experience, custom scalar type mapping, type guards and more)
 
+#### Chain request syntax
+
+![](https://i.gyazo.com/18e4670782b792f06c0e97abdee41bf2.gif)
+
+#### Raw request syntax
+
 ![](https://i.gyazo.com/5f0255b59f0f9c7eebdbe6c077e39cb0.gif)
 
-The JS request object is then converted to the GraphQL query and variables
+The request above is then converted to the GraphQL query and variables
 
 ```graphql
 query Query($v1: String!, $v2: SearchType!, $v3: Int) {
@@ -185,31 +191,9 @@ export const myClient = createClient({
 })
 ```
 
-## Use the client
-
-```js
-import { myClient } from './myClient'
-
-myClient
-  .query(REQUEST_OBJECT) // Promise<{ data?: Query, errors?: GraphQLError[] }>
-  .then(console.log.bind(console, 'query:'))
-
-myClient
-  .mutation(REQUEST_OBJECT) // Promise<{ data?: Mutation, errors?: GraphQLError[] }>
-  .then(console.log.bind(console, 'mutation:'))
-
-myClient
-  .subscription(REQUEST_OBJECT) // => Observable<{ data?: Subscription, errors?: GraphQLError[] }>
-  .subscribe({
-    next: console.log.bind(console, 'next:'),
-    error: console.log.bind(console, 'error:'),
-    complete: console.log.bind(console, 'complete:'),
-  })
-```
-
-Where `REQUEST_OBJECT` is the JS object representing GraphQL request
-
 ## Making GraphQL requests in JS
+
+#### Raw request syntax
 
 The format for the request object is visually similar to an actual GraphQL query, so something like
 
@@ -339,6 +323,26 @@ fragment f3 on Snake {
   length
 }
 ```
+
+#### Chain request syntax
+
+```js
+chain.query.user({ id: 'USER_ID' }).execute({
+  username: 1,
+  email: 1,
+  on_AdminUser: {
+    isSuperAdmin: 1,
+  },
+})
+
+// execute() returns Promise<User | undefined> on query/mutation and Observable<User | undefined> on subscription
+```
+
+In the chain, each member refers to a GraphQL field going down the tree. Fields with arguments can be called like methods.
+You can continue the chain so long as the fields that are mentioned are object types or interfaces. At any point, you can
+finish the chain by calling `execute()` (without arguments, if the last field is a scalar or with field selection if
+the last field is an object). Calling `execute()` returns a `Promise` (for query/mutation) or an `Observable` (subscription)
+of type equal to the type of the last field in the chain or `undefined`
 
 ## Custom scalar type mapping
 
