@@ -339,10 +339,10 @@ chain.query.user({ id: 'USER_ID' }).execute({
 ```
 
 In the chain, each member refers to a GraphQL field going down the tree. Fields with arguments can be called like methods.
-You can continue the chain so long as the fields that are mentioned are object types or interfaces. At any point, you can
-finish the chain by calling `execute()` (without arguments, if the last field is a scalar or with field selection if
-the last field is an object). Calling `execute()` returns a `Promise` (for query/mutation) or an `Observable` (subscription)
-of type equal to the type of the last field in the chain or `undefined`
+You can continue the chain so long as the fields that are mentioned are object types or interfaces (not arrays, unions etc.).
+At any point, you can finish the chain by calling `execute()` (without arguments, if the last field is a scalar or with
+field selection if the last field is an object). Calling `execute()` returns a `Promise` (for query/mutation) or an
+`Observable` (subscription) of type equal to the type of the last field in the chain or `undefined`
 
 ## Custom scalar type mapping
 
