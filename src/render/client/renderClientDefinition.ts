@@ -1,4 +1,5 @@
 import { GraphQLSchema } from 'graphql'
+import { chainTypeName } from '../chain/objectType'
 import { RenderContext } from '../common/RenderContext'
 import { requestTypeName } from '../requestTypes/requestTypeName'
 
@@ -13,24 +14,24 @@ export const renderClientDefinition = (schema: GraphQLSchema, ctx: RenderContext
   const subscriptionType = schema.getSubscriptionType()
 
   if (queryType) {
-    types.push(requestTypeName(queryType), queryType.name)
-    imports.push(requestTypeName(queryType), queryType.name)
+    types.push(requestTypeName(queryType), chainTypeName(queryType, 'Promise'), queryType.name)
+    imports.push(requestTypeName(queryType), chainTypeName(queryType, 'Promise'), queryType.name)
   } else {
-    types.push('never', 'never')
+    types.push('never', 'never', 'never')
   }
 
   if (mutationType) {
-    types.push(requestTypeName(mutationType), mutationType.name)
-    imports.push(requestTypeName(mutationType), mutationType.name)
+    types.push(requestTypeName(mutationType), chainTypeName(mutationType, 'Promise'), mutationType.name)
+    imports.push(requestTypeName(mutationType), chainTypeName(mutationType, 'Promise'), mutationType.name)
   } else {
-    types.push('never', 'never')
+    types.push('never', 'never', 'never')
   }
 
   if (subscriptionType) {
-    types.push(requestTypeName(subscriptionType), subscriptionType.name)
-    imports.push(requestTypeName(subscriptionType), subscriptionType.name)
+    types.push(requestTypeName(subscriptionType), chainTypeName(subscriptionType, 'Observable'), subscriptionType.name)
+    imports.push(requestTypeName(subscriptionType), chainTypeName(subscriptionType, 'Observable'), subscriptionType.name)
   } else {
-    types.push('never', 'never')
+    types.push('never', 'never', 'never')
   }
 
   ctx.addCodeBlock(`

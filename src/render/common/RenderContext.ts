@@ -7,7 +7,7 @@ import { relativeImportPath } from './relativeImportPath'
 interface Import {
   isDefault: boolean
   module?: string
-  alias: string
+  alias?: string
 }
 
 interface ImportMap {
@@ -25,9 +25,9 @@ export class RenderContext {
     this.codeBlocks.push(block)
   }
 
-  addImport(from: string, isDefault: boolean, module?: string) {
+  addImport(from: string, isDefault: boolean, module?: string, fromAbsolute?: boolean, noAlias?: boolean) {
     if (this.config && this.config.output) {
-      from = relativeImportPath(this.config.output, from)
+      from = fromAbsolute ? from : relativeImportPath(this.config.output, from)
     }
 
     if (!this.imports[from]) this.imports[from] = []
@@ -39,8 +39,7 @@ export class RenderContext {
     if (existing) return existing.alias
 
     this.importAliasCounter++
-    const alias = `a${this.importAliasCounter}`
-
+    const alias = noAlias ? undefined : `a${this.importAliasCounter}`
     imports.push({ isDefault, module, alias })
 
     return alias
@@ -59,7 +58,7 @@ export class RenderContext {
       }
 
       if (namedImports.length > 0) {
-        statements.push(`{${namedImports.map(i => `${i.module} as ${i.alias}`).join(',')}}`)
+        statements.push(`{${namedImports.map(i => (i.alias ? `${i.module} as ${i.alias}` : i.module)).join(',')}}`)
       }
 
       imports.push(`import ${statements.join(',')} from '${from}'`)
