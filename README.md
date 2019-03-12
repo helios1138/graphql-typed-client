@@ -356,8 +356,10 @@ type User {
 
 ```js
 const status = await myClient.chain.query.user({ id: 'USER_ID' }).status.execute()
-// status is `String | null`, which means that if user with specified ID exists, any string or null are considered valid
-// but if the user with specified ID is not found, the Promise returned from `execute()` will throw an error
+// status is `String | null`, which means that if user with specified ID exists, any string or null
+// are both considered valid
+// but if the user with specified ID is not found, the Promise returned from `execute()`
+// will throw an error
 
 const status = await myClient.chain.query.user({ id: 'USER_ID' }).status.execute(1, 'default status')
 // in this case, if the user with specified ID is not found, returned status will be 'default status'
