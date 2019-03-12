@@ -34,15 +34,18 @@ export const objectType = (
     const argsOptional = !field.args.find(a => isNonNullType(a.type))
     const argsString = toArgsString(field)
 
-    const executeReturnType = `${wrapper}<${renderTyping(field.type, false, false, false)}|undefined>`
+    const executeReturnType = `${renderTyping(field.type, false, false, false)}`
+    const executeReturnTypeWrapped = `${wrapper}<${executeReturnType}>`
 
     const fieldType = resolvable
       ? stopChain
-        ? `{execute:(request:${requestTypeName(resolvedType)})=>${executeReturnType}}`
+        ? `{execute:(request:${requestTypeName(
+            resolvedType,
+          )},defaultValue?:${executeReturnType})=>${executeReturnTypeWrapped}}`
         : `${chainTypeName(resolvedType, wrapper)}&{execute:(request:${requestTypeName(
             resolvedType,
-          )})=>${executeReturnType}}`
-      : `{execute:()=>${executeReturnType}}`
+          )},defaultValue?:${executeReturnType})=>${executeReturnTypeWrapped}}`
+      : `{execute:(request?:boolean|number,defaultValue?:${executeReturnType})=>${executeReturnTypeWrapped}}`
 
     const result = []
 

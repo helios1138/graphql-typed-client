@@ -1,53 +1,79 @@
 export interface ObjectPromiseChain {
-  scalar: { execute: () => Promise<(String | null) | undefined> }
-  scalarOptionalArgs: ((args?: { arg?: String | null }) => { execute: () => Promise<(String | null) | undefined> }) &
-    ({ execute: () => Promise<(String | null) | undefined> })
-  scalarRequiredArgs: (args: { arg: String }) => { execute: () => Promise<(String | null) | undefined> }
-  object: ObjectPromiseChain & { execute: (request: ObjectRequest) => Promise<(Object | null) | undefined> }
+  scalar: { execute: (request?: boolean | number, defaultValue?: String | null) => Promise<String | null> }
+  scalarOptionalArgs: ((args?: {
+    arg?: String | null
+  }) => { execute: (request?: boolean | number, defaultValue?: String | null) => Promise<String | null> }) &
+    ({ execute: (request?: boolean | number, defaultValue?: String | null) => Promise<String | null> })
+  scalarRequiredArgs: (args: {
+    arg: String
+  }) => { execute: (request?: boolean | number, defaultValue?: String | null) => Promise<String | null> }
+  object: ObjectPromiseChain & { execute: (request: ObjectRequest, defaultValue?: Object | null) => Promise<Object | null> }
   objectOptionalArgs: ((args?: {
     arg?: String | null
-  }) => ObjectPromiseChain & { execute: (request: ObjectRequest) => Promise<(Object | null) | undefined> }) &
-    (ObjectPromiseChain & { execute: (request: ObjectRequest) => Promise<(Object | null) | undefined> })
+  }) => ObjectPromiseChain & { execute: (request: ObjectRequest, defaultValue?: Object | null) => Promise<Object | null> }) &
+    (ObjectPromiseChain & { execute: (request: ObjectRequest, defaultValue?: Object | null) => Promise<Object | null> })
   objectRequiredArgs: (args: {
     arg: String
-  }) => ObjectPromiseChain & { execute: (request: ObjectRequest) => Promise<(Object | null) | undefined> }
-  scalarList: { execute: () => Promise<((String | null)[] | null) | undefined> }
+  }) => ObjectPromiseChain & { execute: (request: ObjectRequest, defaultValue?: Object | null) => Promise<Object | null> }
+  scalarList: {
+    execute: (request?: boolean | number, defaultValue?: (String | null)[] | null) => Promise<(String | null)[] | null>
+  }
   scalarListOptionalArgs: ((args?: {
     arg?: String | null
-  }) => { execute: () => Promise<((String | null)[] | null) | undefined> }) &
-    ({ execute: () => Promise<((String | null)[] | null) | undefined> })
-  scalarListRequiredArgs: (args: { arg: String }) => { execute: () => Promise<((String | null)[] | null) | undefined> }
-  objectList: { execute: (request: ObjectRequest) => Promise<((Object | null)[] | null) | undefined> }
+  }) => {
+    execute: (request?: boolean | number, defaultValue?: (String | null)[] | null) => Promise<(String | null)[] | null>
+  }) &
+    ({ execute: (request?: boolean | number, defaultValue?: (String | null)[] | null) => Promise<(String | null)[] | null> })
+  scalarListRequiredArgs: (args: {
+    arg: String
+  }) => {
+    execute: (request?: boolean | number, defaultValue?: (String | null)[] | null) => Promise<(String | null)[] | null>
+  }
+  objectList: {
+    execute: (request: ObjectRequest, defaultValue?: (Object | null)[] | null) => Promise<(Object | null)[] | null>
+  }
   objectListOptionalArgs: ((args?: {
     arg?: String | null
-  }) => { execute: (request: ObjectRequest) => Promise<((Object | null)[] | null) | undefined> }) &
-    ({ execute: (request: ObjectRequest) => Promise<((Object | null)[] | null) | undefined> })
+  }) => {
+    execute: (request: ObjectRequest, defaultValue?: (Object | null)[] | null) => Promise<(Object | null)[] | null>
+  }) &
+    ({ execute: (request: ObjectRequest, defaultValue?: (Object | null)[] | null) => Promise<(Object | null)[] | null> })
   objectListRequiredArgs: (args: {
     arg: String
-  }) => { execute: (request: ObjectRequest) => Promise<((Object | null)[] | null) | undefined> }
+  }) => { execute: (request: ObjectRequest, defaultValue?: (Object | null)[] | null) => Promise<(Object | null)[] | null> }
 }
 
 export interface ObjectRequiredPromiseChain {
-  scalar: { execute: () => Promise<String | undefined> }
-  scalarOptionalArgs: ((args?: { arg?: String | null }) => { execute: () => Promise<String | undefined> }) &
-    ({ execute: () => Promise<String | undefined> })
-  scalarRequiredArgs: (args: { arg: String }) => { execute: () => Promise<String | undefined> }
-  object: ObjectPromiseChain & { execute: (request: ObjectRequest) => Promise<Object | undefined> }
+  scalar: { execute: (request?: boolean | number, defaultValue?: String) => Promise<String> }
+  scalarOptionalArgs: ((args?: {
+    arg?: String | null
+  }) => { execute: (request?: boolean | number, defaultValue?: String) => Promise<String> }) &
+    ({ execute: (request?: boolean | number, defaultValue?: String) => Promise<String> })
+  scalarRequiredArgs: (args: {
+    arg: String
+  }) => { execute: (request?: boolean | number, defaultValue?: String) => Promise<String> }
+  object: ObjectPromiseChain & { execute: (request: ObjectRequest, defaultValue?: Object) => Promise<Object> }
   objectOptionalArgs: ((args?: {
     arg?: String | null
-  }) => ObjectPromiseChain & { execute: (request: ObjectRequest) => Promise<Object | undefined> }) &
-    (ObjectPromiseChain & { execute: (request: ObjectRequest) => Promise<Object | undefined> })
+  }) => ObjectPromiseChain & { execute: (request: ObjectRequest, defaultValue?: Object) => Promise<Object> }) &
+    (ObjectPromiseChain & { execute: (request: ObjectRequest, defaultValue?: Object) => Promise<Object> })
   objectRequiredArgs: (args: {
     arg: String
-  }) => ObjectPromiseChain & { execute: (request: ObjectRequest) => Promise<Object | undefined> }
-  scalarList: { execute: () => Promise<String[] | undefined> }
-  scalarListOptionalArgs: ((args?: { arg?: String | null }) => { execute: () => Promise<String[] | undefined> }) &
-    ({ execute: () => Promise<String[] | undefined> })
-  scalarListRequiredArgs: (args: { arg: String }) => { execute: () => Promise<String[] | undefined> }
-  objectList: { execute: (request: ObjectRequest) => Promise<Object[] | undefined> }
+  }) => ObjectPromiseChain & { execute: (request: ObjectRequest, defaultValue?: Object) => Promise<Object> }
+  scalarList: { execute: (request?: boolean | number, defaultValue?: String[]) => Promise<String[]> }
+  scalarListOptionalArgs: ((args?: {
+    arg?: String | null
+  }) => { execute: (request?: boolean | number, defaultValue?: String[]) => Promise<String[]> }) &
+    ({ execute: (request?: boolean | number, defaultValue?: String[]) => Promise<String[]> })
+  scalarListRequiredArgs: (args: {
+    arg: String
+  }) => { execute: (request?: boolean | number, defaultValue?: String[]) => Promise<String[]> }
+  objectList: { execute: (request: ObjectRequest, defaultValue?: Object[]) => Promise<Object[]> }
   objectListOptionalArgs: ((args?: {
     arg?: String | null
-  }) => { execute: (request: ObjectRequest) => Promise<Object[] | undefined> }) &
-    ({ execute: (request: ObjectRequest) => Promise<Object[] | undefined> })
-  objectListRequiredArgs: (args: { arg: String }) => { execute: (request: ObjectRequest) => Promise<Object[] | undefined> }
+  }) => { execute: (request: ObjectRequest, defaultValue?: Object[]) => Promise<Object[]> }) &
+    ({ execute: (request: ObjectRequest, defaultValue?: Object[]) => Promise<Object[]> })
+  objectListRequiredArgs: (args: {
+    arg: String
+  }) => { execute: (request: ObjectRequest, defaultValue?: Object[]) => Promise<Object[]> }
 }

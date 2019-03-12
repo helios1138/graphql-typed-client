@@ -90,11 +90,15 @@ export const createClient = <QR extends Fields, QC, Q, MR extends Fields, MC, M,
       : resultObservable
   }
 
-  const mapResponse = (path: string[]) => (result: ExecutionResult) => {
-    if (result.errors) throw new ClientError(`Response contains errors`, result.errors)
-    if (!result.data) throw new ClientError('Response data is empty')
+  const mapResponse = (path: string[], defaultValue: any) => (response: ExecutionResult) => {
+    if (response.errors) throw new ClientError(`Response contains errors`, response.errors)
+    if (!response.data) throw new ClientError('Response data is empty')
 
-    return get(result, ['data', ...path], null)
+    const result = get(response, ['data', ...path], defaultValue)
+
+    if (result === undefined) throw new ClientError(`Response path \`${path.join('.')}\` is empty`)
+
+    return result
   }
 
   return {
@@ -102,9 +106,11 @@ export const createClient = <QR extends Fields, QC, Q, MR extends Fields, MC, M,
     mutation,
     subscription,
     chain: {
-      query: <any>chain((path, request) => query(request).then(mapResponse(path))),
-      mutation: <any>chain((path, request) => mutation(request).then(mapResponse(path))),
-      subscription: <any>chain((path, request) => subscription(request).pipe(map(mapResponse(path)))),
+      query: <any>chain((path, request, defaultValue) => query(request).then(mapResponse(path, defaultValue))),
+      mutation: <any>chain((path, request, defaultValue) => mutation(request).then(mapResponse(path, defaultValue))),
+      subscription: <any>(
+        chain((path, request, defaultValue) => subscription(request).pipe(map(mapResponse(path, defaultValue))))
+      ),
     },
   }
 }

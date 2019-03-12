@@ -19,13 +19,14 @@ const pathToRequest = (path: string[][], executeFields: any): any => {
   return { [field]: arg ? (nextFields ? [arg, nextFields] : [arg]) : nextFields ? nextFields : 1 }
 }
 
-const wrapInProxy = (chain: Chain, onExecute: (path: string[], request: any) => any): any =>
+const wrapInProxy = (chain: Chain, onExecute: (path: string[], request: any, defaultValue: any) => any): any =>
   new Proxy(chain, {
     get(target, prop) {
       if (typeof prop !== 'string') throw new Error('property is not a string')
 
       if (prop === 'execute') {
-        return (fields: any) => onExecute(target.path.map(i => i[0]), pathToRequest(target.path, fields))
+        return (fields: any, defaultValue: any) =>
+          onExecute(target.path.map(i => i[0]), pathToRequest(target.path, fields), defaultValue)
       } else {
         const newPath = [...target.path, [prop]]
         return wrapInProxy(newChain(newPath), onExecute)
@@ -37,4 +38,5 @@ const wrapInProxy = (chain: Chain, onExecute: (path: string[], request: any) => 
     },
   })
 
-export const chain = (onExecute: (path: string[], request: any) => any) => wrapInProxy(newChain(), onExecute)
+export const chain = (onExecute: (path: string[], request: any, defaultValue: any) => any) =>
+  wrapInProxy(newChain(), onExecute)
