@@ -327,7 +327,7 @@ fragment f3 on Snake {
 #### Chain request syntax
 
 ```js
-chain.query.user({ id: 'USER_ID' }).execute({
+myClient.chain.query.user({ id: 'USER_ID' }).execute({
   username: 1,
   email: 1,
   on_AdminUser: {
@@ -345,6 +345,23 @@ At any point, you can finish the chain by calling `execute(fieldRequest, default
 Unlike in raw request syntax, where GraphQL errors are just returned in the response, chain execution will **throw** an error
 if GraphQL endpoint responds with `errors`, empty `data` or empty value at the requested path when no `defaultValue`
 was provided.
+
+##### Default value logic clarification
+
+```graphql
+type User {
+  status: String
+}
+```
+
+```js
+const status = await myClient.chain.query.user({ id: 'USER_ID' }).status.execute()
+// status is `String | null`, which means that if user with specified ID exists, any string or null are considered valid
+// but if the user with specified ID is not found, the Promise returned from `execute()` will throw an error
+
+const status = await myClient.chain.query.user({ id: 'USER_ID' }).status.execute(1, 'default status')
+// in this case, if the user with specified ID is not found, returned status will be 'default status'
+```
 
 ## Custom scalar type mapping
 
