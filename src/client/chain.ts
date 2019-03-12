@@ -16,7 +16,15 @@ const pathToRequest = (path: string[][], executeFields: any): any => {
 
   const nextFields = pathToRequest(rest, executeFields) || executeFields
 
-  return { [field]: arg ? (nextFields ? [arg, nextFields] : [arg]) : nextFields ? nextFields : 1 }
+  return {
+    [field]: arg
+      ? nextFields && typeof nextFields !== 'boolean' && typeof nextFields !== 'number'
+        ? [arg, nextFields]
+        : [arg]
+      : nextFields
+      ? nextFields
+      : 1,
+  }
 }
 
 const wrapInProxy = (chain: Chain, onExecute: (path: string[], request: any, defaultValue: any) => any): any =>

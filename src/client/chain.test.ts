@@ -7,7 +7,16 @@ describe('chain', () => {
 
     c.path.to.scalar.execute()
 
-    expect(onExecute.mock.calls[0]).toEqual([['path', 'to', 'scalar'], { path: { to: { scalar: 1 } } }])
+    expect(onExecute.mock.calls[0]).toEqual([['path', 'to', 'scalar'], { path: { to: { scalar: 1 } } }, undefined])
+  })
+
+  test('convert deep scalar query with default value', () => {
+    const onExecute = jest.fn()
+    const c = chain(onExecute)
+
+    c.path.to.scalar.execute(1, 'defaultValue')
+
+    expect(onExecute.mock.calls[0]).toEqual([['path', 'to', 'scalar'], { path: { to: { scalar: 1 } } }, 'defaultValue'])
   })
 
   test('convert deep scalar query with args', () => {
@@ -22,6 +31,23 @@ describe('chain', () => {
     expect(onExecute.mock.calls[0]).toEqual([
       ['path', 'to', 'scalar'],
       { path: { to: [{ id: 'ID' }, { scalar: [{ id: 'ID' }] }] } },
+      undefined,
+    ])
+  })
+
+  test('convert deep scalar query with args and default value', () => {
+    const onExecute = jest.fn()
+    const c = chain(onExecute)
+
+    c.path
+      .to({ id: 'ID' })
+      .scalar({ id: 'ID' })
+      .execute(1, 'defaultValue')
+
+    expect(onExecute.mock.calls[0]).toEqual([
+      ['path', 'to', 'scalar'],
+      { path: { to: [{ id: 'ID' }, { scalar: [{ id: 'ID' }] }] } },
+      'defaultValue',
     ])
   })
 
@@ -31,7 +57,24 @@ describe('chain', () => {
 
     c.path.to.object.execute({ some: 1, other: 1 })
 
-    expect(onExecute.mock.calls[0]).toEqual([['path', 'to', 'object'], { path: { to: { object: { some: 1, other: 1 } } } }])
+    expect(onExecute.mock.calls[0]).toEqual([
+      ['path', 'to', 'object'],
+      { path: { to: { object: { some: 1, other: 1 } } } },
+      undefined,
+    ])
+  })
+
+  test('convert deep object query with default value', () => {
+    const onExecute = jest.fn()
+    const c = chain(onExecute)
+
+    c.path.to.object.execute({ some: 1, other: 1 }, 'defaultValue')
+
+    expect(onExecute.mock.calls[0]).toEqual([
+      ['path', 'to', 'object'],
+      { path: { to: { object: { some: 1, other: 1 } } } },
+      'defaultValue',
+    ])
   })
 
   test('convert deep object query with args', () => {
@@ -46,6 +89,23 @@ describe('chain', () => {
     expect(onExecute.mock.calls[0]).toEqual([
       ['path', 'to', 'object'],
       { path: { to: [{ id: 'ID' }, { object: [{ id: 'ID' }, { some: 1, other: 1 }] }] } },
+      undefined,
+    ])
+  })
+
+  test('convert deep object query with args and default value', () => {
+    const onExecute = jest.fn()
+    const c = chain(onExecute)
+
+    c.path
+      .to({ id: 'ID' })
+      .object({ id: 'ID' })
+      .execute({ some: 1, other: 1 }, 'defaultValue')
+
+    expect(onExecute.mock.calls[0]).toEqual([
+      ['path', 'to', 'object'],
+      { path: { to: [{ id: 'ID' }, { object: [{ id: 'ID' }, { some: 1, other: 1 }] }] } },
+      'defaultValue',
     ])
   })
 
