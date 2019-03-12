@@ -4,7 +4,7 @@ interface Chain {
 }
 
 const newChain = (path: string[][] = []) => {
-  const chain: Chain = () => {}
+  const chain = <Chain>(() => {})
   chain.path = path
   return chain
 }

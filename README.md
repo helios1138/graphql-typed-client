@@ -359,7 +359,7 @@ For example, let's say you have a custom `Date` type
 scalar Date
 ```
 
-By default, the we will generate it as
+By default, we will generate it as
 
 ```typescript
 export type Date = any
