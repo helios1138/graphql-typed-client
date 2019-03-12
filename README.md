@@ -335,16 +335,16 @@ chain.query.user({ id: 'USER_ID' }).execute({
   },
 })
 
-// execute() returns Promise<User | undefined> on query/mutation and Observable<User | undefined> on subscription
+// execute() returns Promise<User> on query/mutation and Observable<User> on subscription
 ```
 
 In the chain, each member refers to a GraphQL field going down the tree. Fields with arguments can be called like methods.
 You can continue the chain so long as the fields that are mentioned are object types or interfaces (not arrays, unions etc.).
-At any point, you can finish the chain by calling `execute()` (without arguments, if the last field is a scalar or with
-field selection if the last field is an object). Calling `execute()` returns a `Promise` (for query/mutation) or an
-`Observable` (subscription) of type equal to the type of the last field in the chain or `undefined`. Unlike in raw request
-syntax, where GraphQL errors are just returned in the response, chain execution will **throw** an error if GraphQL endpoint
-responds with `errors` or empty `data`.
+At any point, you can finish the chain by calling `execute(fieldRequest, defaultValue)`. Calling `execute()` returns a `Promise`
+(for query/mutation) or an `Observable` (subscription) of type equal to the type of the last field in the chain.
+Unlike in raw request syntax, where GraphQL errors are just returned in the response, chain execution will **throw** an error
+if GraphQL endpoint responds with `errors`, empty `data` or empty value at the requested path when no `defaultValue`
+was provided.
 
 ## Custom scalar type mapping
 
