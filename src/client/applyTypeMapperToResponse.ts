@@ -3,7 +3,12 @@ import { getFieldFromPath } from './getFieldFromPath'
 import { LinkedType } from './linkTypeMap'
 
 export interface TypeMapper {
-  [type: string]: (input: any) => any
+  [type: string]:
+    | {
+        serialize: (input: any) => any
+        deserialize: (output: any) => any
+      }
+    | undefined
 }
 
 const tick = (root: LinkedType, data: any, mapper: TypeMapper, path: string[]): any => {
@@ -18,9 +23,12 @@ const tick = (root: LinkedType, data: any, mapper: TypeMapper, path: string[]): 
     }, {})
   } else {
     const field = getFieldFromPath(root, path)
-
-    if (mapper[field.type.name] !== undefined) return mapper[field.type.name](data)
-    else return data
+    const specificMapper = mapper[field.type.name]
+    if (specificMapper !== undefined) {
+      return specificMapper.deserialize(data)
+    } else {
+      return data
+    }
   }
 }
 

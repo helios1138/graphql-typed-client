@@ -12,6 +12,6 @@ export const renderTypeMappedAlias = (type: GraphQLNamedType, ctx: RenderContext
 
   if (hasTypeMappedAlias(type, ctx)) {
     const alias = ctx.addImport(ctx.config.options.typeMapper.location, false, 'typeMapper')
-    ctx.addCodeBlock(`export type ${type.name} = ReturnType<typeof ${alias}.${type.name}>`)
+    ctx.addCodeBlock(`export type ${type.name} = ReturnType<typeof ${alias}.${type.name}.deserialize>`)
   }
 }

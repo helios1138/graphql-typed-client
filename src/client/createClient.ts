@@ -61,7 +61,7 @@ export const createClient = <QR extends Fields, QC, Q, MR extends Fields, MC, M,
     if (!fetcher) throw new Error('fetcher argument is missing')
     if (!queryRoot) throw new Error('queryRoot argument is missing')
 
-    const resultPromise = fetcher(requestToGql('query', queryRoot, request), fetch, qs)
+    const resultPromise = fetcher(requestToGql('query', queryRoot, request, typeMapper), fetch, qs)
 
     return typeMapper
       ? resultPromise.then(result => applyTypeMapperToResponse(queryRoot, result, typeMapper))
@@ -72,7 +72,7 @@ export const createClient = <QR extends Fields, QC, Q, MR extends Fields, MC, M,
     if (!fetcher) throw new Error('fetcher argument is missing')
     if (!mutationRoot) throw new Error('mutationRoot argument is missing')
 
-    const resultPromise = fetcher(requestToGql('mutation', mutationRoot, request), fetch, qs)
+    const resultPromise = fetcher(requestToGql('mutation', mutationRoot, request, typeMapper), fetch, qs)
 
     return typeMapper
       ? resultPromise.then(result => applyTypeMapperToResponse(mutationRoot, result, typeMapper))
@@ -83,7 +83,7 @@ export const createClient = <QR extends Fields, QC, Q, MR extends Fields, MC, M,
     if (!subscriptionCreatorOptions) throw new Error('subscriptionClientOptions argument is missing')
     if (!subscriptionRoot) throw new Error('subscriptionRoot argument is missing')
 
-    const resultObservable = createSubscription(requestToGql('subscription', subscriptionRoot, <any>request))
+    const resultObservable = createSubscription(requestToGql('subscription', subscriptionRoot, request, typeMapper))
 
     return typeMapper
       ? resultObservable.pipe(map(result => applyTypeMapperToResponse(subscriptionRoot, result, typeMapper)))

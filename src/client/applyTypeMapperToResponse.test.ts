@@ -62,7 +62,10 @@ describe('applyTypeMapperToResponse', () => {
         },
       },
       {
-        Date: d => new Date(d),
+        Date: {
+          serialize: (d: Date) => d.toISOString(),
+          deserialize: (d: string) => new Date(d),
+        },
       },
     )
 

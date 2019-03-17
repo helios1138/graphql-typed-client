@@ -1,6 +1,8 @@
 import { OperationTypeNode } from 'graphql'
 import { getFieldFromPath } from './getFieldFromPath'
 import { LinkedType } from './linkTypeMap'
+import { applyTypeMapperToVariable } from './applyTypeMapperToVariable'
+import { TypeMapper } from './applyTypeMapperToResponse'
 
 export interface Args {
   [arg: string]: any | undefined
@@ -15,7 +17,7 @@ export type Request = boolean | number | Fields | [Args, Fields?]
 export interface Variables {
   [name: string]: {
     value: any
-    typing: string
+    typing: [string, LinkedType]
   }
 }
 
@@ -107,18 +109,23 @@ const parseRequest = (request: Request | undefined, ctx: Context, path: string[]
   }
 }
 
-export const requestToGql = (operation: OperationTypeNode, root: LinkedType, fields: Fields): Gql => {
+export const requestToGql = (
+  operation: OperationTypeNode,
+  root: LinkedType,
+  fields: Fields,
+  typeMapper?: TypeMapper,
+): Gql => {
   const ctx: Context = { root, varCounter: 0, variables: {}, fragmentCounter: 0, fragments: [] }
   const result = parseRequest(fields, ctx, [])
 
   const varNames = Object.keys(ctx.variables)
 
-  const varsString = varNames.length > 0 ? `(${varNames.map(v => `$${v}:${ctx.variables[v].typing}`)})` : ''
+  const varsString = varNames.length > 0 ? `(${varNames.map(v => `$${v}:${ctx.variables[v].typing[0]}`)})` : ''
 
   return {
     query: [`${operation}${varsString}${result}`, ...ctx.fragments].join(','),
     variables: Object.keys(ctx.variables).reduce<{ [name: string]: any }>((r, v) => {
-      r[v] = ctx.variables[v].value
+      r[v] = applyTypeMapperToVariable(ctx.variables[v].value, ctx.variables[v].typing[1], typeMapper)
       return r
     }, {}),
   }
