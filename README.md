@@ -372,7 +372,7 @@ By default, all custom scalar types are generated as aliases to TypeScript's `an
 You can override this behavior by providing your own type mapper that will be used during the schema generation and applied
 to query responses
 
-For example, let's say you have a custom `Date` type. To specify how your file should be serialized/deserialized, create
+For example, let's say you have a custom `Date` type. To specify how this type should be serialized/deserialized, create
 a type mapper file somewhere in your app
 
 ```typescript
