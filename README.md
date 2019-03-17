@@ -340,8 +340,8 @@ myClient.chain.query.user({ id: 'USER_ID' }).execute({
 
 In the chain, each member refers to a GraphQL field going down the tree. Fields with arguments can be called like methods.
 You can continue the chain so long as the fields that are mentioned are object types or interfaces (not arrays, unions etc.).
-At any point, you can finish the chain by calling `execute(fieldRequest, defaultValue)`. Calling `execute()` returns a `Promise`
-(for query/mutation) or an `Observable` (subscription) of type equal to the type of the last field in the chain.
+At any point, you can finish the chain by calling `execute(fieldRequest, defaultValue)`. Calling `execute()` returns
+a `Promise` (for query/mutation) or an `Observable` (subscription) of type equal to the type of the last field in the chain.
 Unlike in raw request syntax, where GraphQL errors are just returned in the response, chain execution will **throw** an error
 if GraphQL endpoint responds with `errors`, empty `data` or empty value at the requested path when no `defaultValue`
 was provided.
@@ -372,25 +372,8 @@ By default, all custom scalar types are generated as aliases to TypeScript's `an
 You can override this behavior by providing your own type mapper that will be used during the schema generation and applied
 to query responses
 
-For example, let's say you have a custom `Date` type
-
-```graphql
-scalar Date
-```
-
-By default, we will generate it as
-
-```typescript
-export type Date = any
-```
-
-With the type mapper present, we can generate it as
-
-```typescript
-export type Date = ReturnType<typeof typeMapper.Date>
-```
-
-To do that, create a type mapper file somewhere in your app
+For example, let's say you have a custom `Date` type. To specify how your file should be serialized/deserialized, create
+a type mapper file somewhere in your app
 
 ```typescript
 // path/to/typeMapper.ts
@@ -398,7 +381,10 @@ To do that, create a type mapper file somewhere in your app
 import moment, { Moment } from 'moment'
 
 export const typeMapper = {
-  Date: (value: string): Moment => moment(value),
+  Date: {
+    serialize: (d: Moment) => d.toISOString(),
+    deserialize: (d: string) => moment(d),
+  },
 }
 ```
 
@@ -412,15 +398,17 @@ module.exports = {
 }
 ```
 
-Now when you generate the client, all fields of `Date` type in query responses will be run through the provided mapping
-function, and the return type of that function is used as the field type in TypeScript (enabling correct code completion and
-type checking)
+Now, all fields of `Date` type in query responses will be automatically **deserialized**, and the return type of the
+`deserialize()` function is going to be used as the definition for `Date` in generated TypeScript (enabling correct code
+completion and type checking). All query variables of `Date` type and input object types that have `Date` fields will be
+automatically **serialized** before sending.
 
 <!-- prettier-ignore -->
 ```typescript
 myClient
   .query({
-    user: [{ id: 'USER_ID' }, {
+    // activatedAfter is a `Date` argument, so now it accepts `Moment` instances
+    user: [{ id: 'USER_ID', activatedAfter: moment('1999-01-01') }, {
       name: 1,
       birthday: 1,
     }],
@@ -429,7 +417,7 @@ myClient
     if (!result.data) return
     const user = result.data.user
 
-    // moment's methods are now available
+    // moment's methods are now available for `birthday` field in the response
     console.log(user.birthday.startOf('day').toISOString())
   })
 ```
