@@ -11,12 +11,12 @@ export interface TypeMapper {
     | undefined
 }
 
-const tick = (root: LinkedType, data: any, typeMapper: TypeMapper, path: string[]): any => {
+const applyRecursively = (root: LinkedType, data: any, typeMapper: TypeMapper, path: string[]): any => {
   if (data === null || data === undefined) return data
-  else if (Array.isArray(data)) return data.map(i => tick(root, i, typeMapper, path))
+  else if (Array.isArray(data)) return data.map(i => applyRecursively(root, i, typeMapper, path))
   else if (typeof data === 'object')
     return Object.keys(data).reduce<any>((r, k) => {
-      r[k] = tick(root, data[k], typeMapper, [...path, k])
+      r[k] = applyRecursively(root, data[k], typeMapper, [...path, k])
       return r
     }, {})
   else {
@@ -32,6 +32,6 @@ export const applyTypeMapperToResponse = <T>(
   result: ExecutionResult<T>,
   mapper: TypeMapper,
 ): ExecutionResult<T> => ({
-  data: tick(root, result.data, mapper, []),
+  data: applyRecursively(root, result.data, mapper, []),
   errors: result.errors,
 })
