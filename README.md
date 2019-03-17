@@ -382,8 +382,8 @@ import moment, { Moment } from 'moment'
 
 export const typeMapper = {
   Date: {
-    serialize: (d: Moment) => d.toISOString(),
-    deserialize: (d: string) => moment(d),
+    serialize: (date: Moment) => date.toISOString(),
+    deserialize: (date: string) => moment(date),
   },
 }
 ```
