@@ -11,17 +11,17 @@ export interface TypeMapper {
     | undefined
 }
 
-const tick = (root: LinkedType, data: any, mapper: TypeMapper, path: string[]): any => {
+const tick = (root: LinkedType, data: any, typeMapper: TypeMapper, path: string[]): any => {
   if (data === null || data === undefined) return data
-  else if (Array.isArray(data)) return data.map(i => tick(root, i, mapper, path))
+  else if (Array.isArray(data)) return data.map(i => tick(root, i, typeMapper, path))
   else if (typeof data === 'object')
     return Object.keys(data).reduce<any>((r, k) => {
-      r[k] = tick(root, data[k], mapper, [...path, k])
+      r[k] = tick(root, data[k], typeMapper, [...path, k])
       return r
     }, {})
   else {
     const field = getFieldFromPath(root, path)
-    const specificMapper = mapper[field.type.name]
+    const specificMapper = typeMapper[field.type.name]
     if (specificMapper !== undefined) return specificMapper.deserialize(data)
     else return data
   }
