@@ -13,8 +13,10 @@ const getRoot = async () => {
       }
 
       input Object {
-        scalar: Date
-        nested: Nested
+        unrelated: Int!
+        nullable: Int
+        scalar: Date!
+        nested: Nested!
       }
 
       type Query {
@@ -30,16 +32,18 @@ const getRoot = async () => {
 }
 
 describe('applyTypeMapperToVariable', () => {
-  test('passes values as is when type mapper is not provided', async () => {
+  test('passes unchanged values  when type mapper is not provided', async () => {
     const root: any = await getRoot()
 
     const date = new Date()
 
     expect(applyTypeMapperToVariable(date, root.fields.field.args.scalar[1])).toBe(date)
-    expect(applyTypeMapperToVariable({ scalar: date, nested: { scalar: date } }, root.fields.field.args.object[1])).toEqual({
-      scalar: date,
-      nested: { scalar: date },
-    })
+    expect(
+      applyTypeMapperToVariable(
+        { unrelated: 3, nullable: null, scalar: date, nested: { scalar: date } },
+        root.fields.field.args.object[1],
+      ),
+    ).toEqual({ unrelated: 3, nullable: null, scalar: date, nested: { scalar: date } })
     expect(
       applyTypeMapperToVariable(
         [{ scalar: date, nested: { scalar: date } }, { scalar: date }],
@@ -62,14 +66,18 @@ describe('applyTypeMapperToVariable', () => {
 
     expect(applyTypeMapperToVariable(date, root.fields.field.args.scalar[1], typeMapper)).toBe(dateString)
     expect(
-      applyTypeMapperToVariable({ scalar: date, nested: { scalar: date } }, root.fields.field.args.object[1], typeMapper),
-    ).toEqual({ scalar: dateString, nested: { scalar: dateString } })
+      applyTypeMapperToVariable(
+        { unrelated: 3, nullable: null, scalar: date, nested: { scalar: date } },
+        root.fields.field.args.object[1],
+        typeMapper,
+      ),
+    ).toEqual({ unrelated: 3, nullable: null, scalar: dateString, nested: { scalar: dateString } })
     expect(
       applyTypeMapperToVariable(
-        [{ scalar: date, nested: { scalar: date } }, { scalar: date }],
+        [{ scalar: date, nested: { scalar: date } }, { unrelated: 3, nullable: null, scalar: date }],
         root.fields.field.args.list[1],
         typeMapper,
       ),
-    ).toEqual([{ scalar: dateString, nested: { scalar: dateString } }, { scalar: dateString }])
+    ).toEqual([{ scalar: dateString, nested: { scalar: dateString } }, { unrelated: 3, nullable: null, scalar: dateString }])
   })
 })
