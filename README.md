@@ -407,7 +407,7 @@ automatically **serialized** before sending.
 ```typescript
 myClient
   .query({
-    // activatedAfter is a `Date` argument, so now it accepts `Moment` instances
+    // `activatedAfter` is a `Date` argument, so now it accepts `Moment` instances
     user: [{ id: 'USER_ID', activatedAfter: moment('1999-01-01') }, {
       name: 1,
       birthday: 1,
