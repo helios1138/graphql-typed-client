@@ -5,6 +5,7 @@ import { renderChainTypes } from '../render/chain/renderChainTypes'
 import { renderClient } from '../render/client/renderClient'
 import { renderClientDefinition } from '../render/client/renderClientDefinition'
 import { RenderContext } from '../render/common/RenderContext'
+import { renderPartialTypes } from '../render/partialTypes/renderPartialTypes'
 import { renderRequestTypes } from '../render/requestTypes/renderRequestTypes'
 import { renderResponseTypes } from '../render/responseTypes/renderResponseTypes'
 import { renderSchema } from '../render/schema/renderSchema'
@@ -49,6 +50,7 @@ export const clientTasks = (config: Config): ListrTask[] => {
                 renderRequestTypes(ctx.schema, renderCtx)
                 renderTypeGuards(ctx.schema, renderCtx)
                 renderChainTypes(ctx.schema, renderCtx)
+                renderPartialTypes(ctx.schema, renderCtx)
 
                 await writeFileToPath([output, schemaTypesFile], renderCtx.toCode('typescript'))
               },
