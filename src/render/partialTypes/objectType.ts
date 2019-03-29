@@ -32,7 +32,7 @@ export const objectType = (type: GraphQLObjectType | GraphQLInterfaceType, ctx: 
       )
     }
 
-    // todo: add __scalar
+    // todo: add __scalar and __typename
 
     const responseTyping = `${fieldComment(f)}${f.name}${renderTyping(f.type, false, false, true, type => {
       if (isObjectType(type) || isInterfaceType(type)) return `${partialTypeName(type, `F${fieldGenericsCounter}`)}`
