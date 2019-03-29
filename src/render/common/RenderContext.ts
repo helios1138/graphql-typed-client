@@ -22,7 +22,7 @@ export class RenderContext {
   constructor(public schema?: GraphQLSchema, public config?: Config) {}
 
   addCodeBlock(block: string) {
-    this.codeBlocks.push(block)
+    if (!~this.codeBlocks.indexOf(block)) this.codeBlocks.push(block)
   }
 
   addImport(from: string, isDefault: boolean, module?: string, fromAbsolute?: boolean, noAlias?: boolean) {
