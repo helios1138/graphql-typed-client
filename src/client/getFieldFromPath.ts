@@ -1,4 +1,5 @@
 import { LinkedField, LinkedType } from './linkTypeMap'
+import { startsWith } from 'lodash'
 
 export const getFieldFromPath = (root: LinkedType | undefined, path: string[]) => {
   let current: LinkedField | undefined
@@ -12,7 +13,23 @@ export const getFieldFromPath = (root: LinkedType | undefined, path: string[]) =
 
     if (!type.fields) throw new Error(`type \`${type.name}\` does not have fields`)
 
-    const field = type.fields[f]
+    const possibleTypes = Object.keys(type.fields)
+      .filter(i => startsWith(i, 'on_'))
+      .reduce(
+        (types, fieldName) => {
+          const field = type.fields && type.fields[fieldName]
+          if (field) types.push(field.type)
+          return types
+        },
+        [type],
+      )
+
+    let field: LinkedField | null = null
+
+    possibleTypes.forEach(type => {
+      const found = type.fields && type.fields[f]
+      if (found) field = found
+    })
 
     if (!field) throw new Error(`type \`${type.name}\` does not have a field \`${f}\``)
 
