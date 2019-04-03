@@ -17,6 +17,13 @@ describe('getFieldFromPath', () => {
           some: { type: 'Some' },
           scalar: { type: 'Scalar' },
           unknown: { type: 'Unknown' },
+          union: { type: 'Union' },
+        },
+      },
+      Union: {
+        name: 'Union',
+        fields: {
+          on_Some: { type: 'Some' },
         },
       },
       Scalar: {
@@ -25,6 +32,7 @@ describe('getFieldFromPath', () => {
     })
 
     expect(getFieldFromPath(typeMap['Some'], ['other', 'some', 'other', 'scalar'])).toBe(typeMap.Other.fields.scalar)
+    expect(getFieldFromPath(typeMap['Other'], ['union', 'other'])).toBe(typeMap.Some.fields.other)
   })
 
   describe('throws an error', () => {
