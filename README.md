@@ -62,7 +62,7 @@ Options:
   -o, --output <./myClient>                    output directory
   -e, --endpoint <http://example.com/graphql>  GraphQL endpoint
   -p, --post                                   use POST for introspection query
-  -s, --schema <./mySchema.graphql>            path to GraphQL schema definition file
+  -s, --schema <./*.graphql>                   glob pattern to match GraphQL schema definition files
   -f, --fetcher <./schemaFetcher.js>           path to introspection query fetcher file
   -c, --config <./myConfig.js>                 path to config file
   -v, --verbose                                verbose output
@@ -105,6 +105,9 @@ If instead of making a query to some endpoint, you just want to use a GraphQL sc
 ```bash
 generate-graphql-client -s mySchema.graphql -o myClient
 
+# or
+generate-graphql-client -s *.graphql -o myClient
+
 # this will also work
 generate-graphql-client -s "type User { name: String } type Query { users: [User] }" -o myClient
 ```
@@ -129,7 +132,7 @@ module.exports = [
     output: 'clients/simpleClient',
   },
   {
-    schema: 'schemas/mySchema.graphql',
+    schema: 'schemas/**/*.graphql',
     output: 'clients/clientFromSchema',
   },
   {

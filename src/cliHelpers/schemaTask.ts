@@ -1,8 +1,12 @@
+import glob from 'glob'
 import { assertValidSchema, buildSchema } from 'graphql'
 import { ListrTask } from 'listr'
+import { promisify } from 'util'
 import { Config } from '../config'
-import { readFileFromPath, requireModuleFromPath } from '../helpers/files'
+import { readFilesAndConcat, requireModuleFromPath } from '../helpers/files'
 import { customFetchSchema, fetchSchema, SchemaFetcher } from '../schema/fetchSchema'
+
+const globAsync = promisify(glob)
 
 export const schemaTask = (config: Config): ListrTask => {
   if (config.endpoint) {
@@ -32,10 +36,12 @@ export const schemaTask = (config: Config): ListrTask => {
       task: async (ctx, task) => {
         let resolvedSchema
 
-        try {
-          resolvedSchema = await readFileFromPath([schema])
-          task.title = `${task.title} from file`
-        } catch (e) {
+        const files = await globAsync(schema)
+
+        if (files.length > 0) {
+          resolvedSchema = await readFilesAndConcat(files)
+          task.title = `${task.title} from file(s)`
+        } else {
           resolvedSchema = schema
         }
 
