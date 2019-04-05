@@ -1,5 +1,6 @@
 import glob from 'glob'
-import { assertValidSchema, buildSchema } from 'graphql'
+import { assertValidSchema, buildASTSchema, extendSchema, parse } from 'graphql'
+import { extractExtensionDefinitions } from 'graphql-tools'
 import { ListrTask } from 'listr'
 import { promisify } from 'util'
 import { Config } from '../config'
@@ -45,7 +46,15 @@ export const schemaTask = (config: Config): ListrTask => {
           resolvedSchema = schema
         }
 
-        ctx.schema = buildSchema(resolvedSchema, config.options && config.options.schemaBuild)
+        const options = config.options && config.options.schemaBuild
+        const ast = parse(resolvedSchema, options)
+
+        ctx.schema = buildASTSchema(ast, options)
+
+        const extensionsAst = extractExtensionDefinitions(ast)
+
+        if (extensionsAst.definitions.length > 0) ctx.schema = extendSchema(ctx.schema, extensionsAst, options)
+
         assertValidSchema(ctx.schema)
       },
     }
