@@ -1,4 +1,5 @@
 import { GraphQLNamedType } from 'graphql'
+import { typeComment } from '../common/comment'
 import { RenderContext } from '../common/RenderContext'
 
 export const hasTypeMappedAlias = (type: GraphQLNamedType, ctx: RenderContext) =>
@@ -12,6 +13,6 @@ export const renderTypeMappedAlias = (type: GraphQLNamedType, ctx: RenderContext
 
   if (hasTypeMappedAlias(type, ctx)) {
     const alias = ctx.addImport(ctx.config.options.typeMapper.location, false, 'typeMapper')
-    ctx.addCodeBlock(`export type ${type.name} = ReturnType<typeof ${alias}.${type.name}.deserialize>`)
+    ctx.addCodeBlock(`${typeComment(type)}export type ${type.name} = ReturnType<typeof ${alias}.${type.name}.deserialize>`)
   }
 }
