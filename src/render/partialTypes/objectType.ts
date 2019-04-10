@@ -3,8 +3,10 @@ import {
   GraphQLInterfaceType,
   GraphQLNamedType,
   GraphQLObjectType,
+  isEnumType,
   isInterfaceType,
   isObjectType,
+  isScalarType,
 } from 'graphql'
 import { fieldComment } from '../common/comment'
 import { RenderContext } from '../common/RenderContext'
@@ -14,8 +16,6 @@ import { requestTypeName } from '../requestTypes/requestTypeName'
 export const partialTypeName = (type: GraphQLNamedType, generic: string) => `${type.name}Partial<${generic}>`
 
 export const objectType = (type: GraphQLObjectType | GraphQLInterfaceType, ctx: RenderContext) => {
-  const fieldGenerics = [`R extends ${requestTypeName(type)}`]
-
   ctx.addCodeBlock('type _FR<F, R> = F extends R ? F : F extends [any, R] ? F[1] : never')
   ctx.addCodeBlock('type _RP<T,F extends keyof T> = Required<Pick<T,F>>')
 
@@ -23,7 +23,7 @@ export const objectType = (type: GraphQLObjectType | GraphQLInterfaceType, ctx: 
     const f = type.getFields()[fieldName]
     const requestTyping = `_RP<R,'${f.name}'>`
 
-    // todo: add __scalar and __typename
+    // todo:  __typename and handle interfaces and unions
 
     const fieldNamedType = getNamedType(f.type)
     const fieldTypeIsObjectLike = isObjectType(fieldNamedType) || isInterfaceType(fieldNamedType)
@@ -43,5 +43,12 @@ export const objectType = (type: GraphQLObjectType | GraphQLInterfaceType, ctx: 
     return `(R extends ${requestTyping}?${responseTyping}:{})`
   })
 
-  ctx.addCodeBlock(`export type ${partialTypeName(type, fieldGenerics.join(','))}=${fieldStrings.join('&')}`)
+  const scalarFields = Object.keys(type.getFields())
+    .map(fieldName => type.getFields()[fieldName])
+    .filter(f => isScalarType(getNamedType(f.type)) || isEnumType(getNamedType(f.type)))
+    .map(f => `'${f.name}'`)
+
+  fieldStrings.push(`(R extends _RP<R,'__scalar'>?Pick<${type.name},${scalarFields.join('|')}>:{})`)
+
+  ctx.addCodeBlock(`export type ${partialTypeName(type, `R extends ${requestTypeName(type)}`)}=${fieldStrings.join('&')}`)
 }
