@@ -47,6 +47,9 @@
     "ts-jest": "^23.10.5",
     "typescript": "^3.3.3"
   },
+  "peerDependencies": {
+    "rxjs": "^6.5.2"
+  },
   "dependencies": {
     "@types/graphql": "^14.0.7",
     "@types/isomorphic-fetch": "^0.0.35",
@@ -67,7 +70,6 @@
     "prettier": "^1.16.4",
     "qs": "^6.6.0",
     "rimraf": "^2.6.3",
-    "rxjs": "^6.4.0",
     "subscriptions-transport-ws": "^0.9.15",
     "ws": "^6.1.4"
   },
