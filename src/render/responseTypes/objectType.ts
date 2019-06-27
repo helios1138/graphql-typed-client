@@ -12,7 +12,7 @@ export const objectType = (type: GraphQLObjectType | GraphQLInterfaceType, ctx: 
 
   const fieldStrings = fields
     .map(f => `${fieldComment(f)}${f.name}${renderTyping(f.type, false, false)}`)
-    .concat([`__typename:${typeNames.map(t => `'${t}'`).join('|')}`])
+    .concat([`__typename:${typeNames.length > 0 ? typeNames.map(t => `'${t}'`).join('|') : 'String'}`])
 
   const interfaceNames = isObjectType(type) ? type.getInterfaces().map(i => i.name) : []
 
