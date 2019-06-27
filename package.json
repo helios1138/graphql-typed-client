@@ -19,7 +19,7 @@
     "scalar-types",
     "custom-scalar"
   ],
-  "version": "1.5.3",
+  "version": "1.6.0",
   "main": "./dist/index.js",
   "types": "./src/index.ts",
   "repository": "git@github.com:helios1138/graphql-typed-client.git",
