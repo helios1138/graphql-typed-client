@@ -35,6 +35,7 @@ const configs: Config[] = program.config
 
 if (!validateConfigs(configs)) program.help()
 
-new Listr(configs.map(config => task(config)), { renderer: program.verbose ? 'verbose' : 'default' })
-  .run()
-  .catch(e => console.log(chalk.red(e.stack)))
+new Listr(configs.map(config => task(config)), { renderer: program.verbose ? 'verbose' : 'default' }).run().catch(e => {
+  console.log(chalk.red(e.stack))
+  process.exit(1)
+})
