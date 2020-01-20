@@ -91,11 +91,15 @@ const parseRequest = (request: Request | undefined, ctx: Context, path: string[]
       .map(f => {
         const parsed = parseRequest(fields[f], ctx, [...path, f])
 
-        if (~f.indexOf('on_')) {
+        if (f.startsWith('on_')) {
           ctx.fragmentCounter++
           const implementationFragment = `f${ctx.fragmentCounter}`
 
-          ctx.fragments.push(`fragment ${implementationFragment} on ${f.split('on_')[1]}${parsed}`)
+          const typeMatch = f.match(/^on_(.+)/)
+
+          if (!typeMatch || !typeMatch[1]) throw new Error('match failed')
+
+          ctx.fragments.push(`fragment ${implementationFragment} on ${typeMatch[1]}${parsed}`)
 
           return `...${implementationFragment}`
         } else {

@@ -33,6 +33,7 @@ const getRoot = async () => {
         user(id: ID!): User!
         livingThings: [LivingThing!]!
         userCount(withFriends: Boolean): Int
+        field_with_on_inside: Int
       }
     `,
     renderTypeMap,
@@ -74,6 +75,7 @@ describe('requestToGql', () => {
         },
       },
       userCount: [{}],
+      field_with_on_inside: 1,
     })
 
     expect(prettify(gql.query, 'graphql')).toBe(
@@ -94,6 +96,7 @@ describe('requestToGql', () => {
               ...f4
             }
             userCount
+            field_with_on_inside
           }
           fragment f1 on User {
             name
