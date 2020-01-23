@@ -23,7 +23,7 @@ export interface ObjectRequest {
     {
       /** single line description */
       required: String
-    }
+    },
   ]
   optionalArgObj?: [{ optional?: String | null }, InterfaceRequest] | InterfaceRequest
   requiredArgObj?: [
@@ -31,7 +31,7 @@ export interface ObjectRequest {
       /** single line description */
       required: Enum
     },
-    InterfaceRequest
+    InterfaceRequest,
   ]
   argTypes?: [
     {
@@ -48,7 +48,7 @@ export interface ObjectRequest {
       maybeValueMaybeList?: (Int | null)[] | null
       nested: Int[][][]
       maybeNested?: (((Int | null)[] | null)[] | null)[] | null
-    }
+    },
   ]
   __typename?: boolean | number
   __scalar?: boolean | number

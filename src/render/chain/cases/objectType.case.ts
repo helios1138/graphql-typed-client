@@ -2,8 +2,9 @@ export interface ObjectPromiseChain {
   scalar: { execute: (request?: boolean | number, defaultValue?: String | null) => Promise<String | null> }
   scalarOptionalArgs: ((args?: {
     arg?: String | null
-  }) => { execute: (request?: boolean | number, defaultValue?: String | null) => Promise<String | null> }) &
-    ({ execute: (request?: boolean | number, defaultValue?: String | null) => Promise<String | null> })
+  }) => { execute: (request?: boolean | number, defaultValue?: String | null) => Promise<String | null> }) & {
+    execute: (request?: boolean | number, defaultValue?: String | null) => Promise<String | null>
+  }
   scalarRequiredArgs: (args: {
     arg: String
   }) => { execute: (request?: boolean | number, defaultValue?: String | null) => Promise<String | null> }
@@ -22,8 +23,9 @@ export interface ObjectPromiseChain {
     arg?: String | null
   }) => {
     execute: (request?: boolean | number, defaultValue?: (String | null)[] | null) => Promise<(String | null)[] | null>
-  }) &
-    ({ execute: (request?: boolean | number, defaultValue?: (String | null)[] | null) => Promise<(String | null)[] | null> })
+  }) & {
+    execute: (request?: boolean | number, defaultValue?: (String | null)[] | null) => Promise<(String | null)[] | null>
+  }
   scalarListRequiredArgs: (args: {
     arg: String
   }) => {
@@ -36,8 +38,7 @@ export interface ObjectPromiseChain {
     arg?: String | null
   }) => {
     execute: (request: ObjectRequest, defaultValue?: (Object | null)[] | null) => Promise<(Object | null)[] | null>
-  }) &
-    ({ execute: (request: ObjectRequest, defaultValue?: (Object | null)[] | null) => Promise<(Object | null)[] | null> })
+  }) & { execute: (request: ObjectRequest, defaultValue?: (Object | null)[] | null) => Promise<(Object | null)[] | null> }
   objectListRequiredArgs: (args: {
     arg: String
   }) => { execute: (request: ObjectRequest, defaultValue?: (Object | null)[] | null) => Promise<(Object | null)[] | null> }
@@ -47,8 +48,9 @@ export interface ObjectRequiredPromiseChain {
   scalar: { execute: (request?: boolean | number, defaultValue?: String) => Promise<String> }
   scalarOptionalArgs: ((args?: {
     arg?: String | null
-  }) => { execute: (request?: boolean | number, defaultValue?: String) => Promise<String> }) &
-    ({ execute: (request?: boolean | number, defaultValue?: String) => Promise<String> })
+  }) => { execute: (request?: boolean | number, defaultValue?: String) => Promise<String> }) & {
+    execute: (request?: boolean | number, defaultValue?: String) => Promise<String>
+  }
   scalarRequiredArgs: (args: {
     arg: String
   }) => { execute: (request?: boolean | number, defaultValue?: String) => Promise<String> }
@@ -63,16 +65,18 @@ export interface ObjectRequiredPromiseChain {
   scalarList: { execute: (request?: boolean | number, defaultValue?: String[]) => Promise<String[]> }
   scalarListOptionalArgs: ((args?: {
     arg?: String | null
-  }) => { execute: (request?: boolean | number, defaultValue?: String[]) => Promise<String[]> }) &
-    ({ execute: (request?: boolean | number, defaultValue?: String[]) => Promise<String[]> })
+  }) => { execute: (request?: boolean | number, defaultValue?: String[]) => Promise<String[]> }) & {
+    execute: (request?: boolean | number, defaultValue?: String[]) => Promise<String[]>
+  }
   scalarListRequiredArgs: (args: {
     arg: String
   }) => { execute: (request?: boolean | number, defaultValue?: String[]) => Promise<String[]> }
   objectList: { execute: (request: ObjectRequest, defaultValue?: Object[]) => Promise<Object[]> }
   objectListOptionalArgs: ((args?: {
     arg?: String | null
-  }) => { execute: (request: ObjectRequest, defaultValue?: Object[]) => Promise<Object[]> }) &
-    ({ execute: (request: ObjectRequest, defaultValue?: Object[]) => Promise<Object[]> })
+  }) => { execute: (request: ObjectRequest, defaultValue?: Object[]) => Promise<Object[]> }) & {
+    execute: (request: ObjectRequest, defaultValue?: Object[]) => Promise<Object[]>
+  }
   objectListRequiredArgs: (args: {
     arg: String
   }) => { execute: (request: ObjectRequest, defaultValue?: Object[]) => Promise<Object[]> }
