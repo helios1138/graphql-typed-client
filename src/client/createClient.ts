@@ -4,7 +4,6 @@ import { ExecutionResult, GraphQLError } from 'graphql'
 import { NEVER, Observable } from 'rxjs'
 import { get } from 'lodash'
 import { map } from 'rxjs/operators'
-import { prettify } from '../helpers/prettify'
 import { applyTypeMapperToResponse, TypeMapper } from './applyTypeMapperToResponse'
 import { chain } from './chain'
 import { LinkedType } from './linkTypeMap'
@@ -13,7 +12,7 @@ import { getSubscriptionCreator, SubscriptionCreatorOptions } from './getSubscri
 
 export class ClientError extends Error {
   constructor(message?: string, public errors?: ReadonlyArray<GraphQLError>) {
-    super(errors ? `${message}\n${errors.map(error => prettify(JSON.stringify(error), 'json')).join('\n')}` : message)
+    super(errors ? `${message}\n${errors.map(error => JSON.stringify(error, null, 2)).join('\n')}` : message)
 
     new.target.prototype.name = new.target.name
     Object.setPrototypeOf(this, new.target.prototype)
